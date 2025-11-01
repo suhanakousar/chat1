@@ -48,6 +48,16 @@ const NavBar = () => {
     } border-b ${scrolled ? 'border-neutral-200/50 dark:border-neutral-700/50' : 'border-transparent'}`}>
       <div className="section-container">
         <div className={`flex items-center justify-between transition-all duration-300 ${scrolled ? 'h-16' : 'h-20'}`}>
+          {/* Back Button for Chat Page */}
+          {pathname.startsWith('/Chat') && (
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-slate-800 transition-colors text-neutral-700 dark:text-neutral-200 font-medium"
+            >
+              ← Back
+            </button>
+          )}
+
           {/* Logo */}
           <Link
             to="/"
@@ -58,7 +68,7 @@ const NavBar = () => {
             }}
           >
             <img src={logo} alt="Chatlas" className="h-10 w-10" />
-            <span className="text-2xl font-bold text-neutral-900">Chatlas</span>
+            <span className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 font-['Montserrat']">Chatlas</span>
           </Link>
 
           {/* Desktop Navigation */}

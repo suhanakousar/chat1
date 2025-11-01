@@ -55,10 +55,10 @@ const AvatarPerson = ({ size = "md", person }) => {
   );
 };
 
-const IconButton = ({ icon, onClick, color = "text-gray-600" }) => {
+const IconButton = ({ icon, onClick, color = "text-text-secondary dark:text-text-secondary" }) => {
   return (
     <button
-      className={`p-2 rounded-full hover:bg-gray-100 transition duration-200 ${color}`}
+      className={`p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition duration-200 ${color}`}
       onClick={onClick}
     >
       {icon}
@@ -70,7 +70,9 @@ const TabButton = ({ text, isActive, onClick }) => {
   return (
     <button
       className={`font-['Montserrat'] px-4 py-1 text-sm font-semibold rounded-full ${
-        isActive ? "bg-[#FFD254]" : "bg-white border border-gray-300"
+        isActive 
+          ? "bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400" 
+          : "bg-surface dark:bg-surface border border-border"
       }`}
       onClick={onClick}
     >

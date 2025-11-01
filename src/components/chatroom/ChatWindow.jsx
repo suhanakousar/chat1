@@ -31,25 +31,19 @@ const MessageBubble = ({ message, currentUserId, currentChat }) => {
         </div>
       )}
       <div>
-        <div className="font-['Inter'] text-xs text-[#65686C]">
+        <div className="font-['Inter'] text-xs text-gray-500 dark:text-gray-400">
           {message?.sender?.given_name}
         </div>
         <div
           className={`font-['Inter'] rounded-lg p-3 inline-block max-w-md break-words whitespace-normal ${
             message.created_by === currentUserId
-              ? "bg-yellow-300 text-black"
-              : // ? currentChat.avatar_color
-                "bg-gray-200 text-black"
+              ? "bg-primary-100 dark:bg-primary-900/30 text-text-primary dark:text-text-primary"
+              : "bg-surface-elevated dark:bg-surface text-text-primary dark:text-text-primary"
           }`}
         >
           {message?.content}
-          <div className="font-['Inter'] text-xs text-[#65686C] mt-1 text-right">
-            {message?.created_at
-              ? new Date(message?.created_at).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : ""}
+          <div className="font-['Inter'] text-xs text-text-tertiary dark:text-text-tertiary mt-1 text-right">
+            {/* timestamp */}
           </div>
         </div>
       </div>
@@ -210,9 +204,9 @@ const ChatWindow = ({
 
   return (
     <div
-      className={`xl:pt-18 lg:pt-16 md:pt-12 sm:pt-8 pt-6 mt-10 lg:mt-2 flex-1 flex flex-col bg-gray-50`}
+      className={`xl:pt-18 lg:pt-16 md:pt-12 sm:pt-8 pt-6 mt-10 lg:mt-2 flex-1 flex flex-col bg-background dark:bg-background transition-colors`}
     >
-      <div className="p-4 border-b bg-white flex items-center justify-between">
+      <div className="p-4 border-b border-border bg-surface dark:bg-surface flex items-center justify-between">
         <div className="flex items-center">
           <button
             className="md:hidden mr-2 text-gray-600"
@@ -226,10 +220,10 @@ const ChatWindow = ({
             text={currentChat?.avatar_text}
           />
           <div className="ml-3">
-            <h2 className="font-['Montserrat'] font-bold text-[1.35rem]">
+            <h2 className="font-['Montserrat'] font-bold text-[1.35rem] text-gray-800 dark:text-gray-200">
               {currentChat?.name}
             </h2>
-            <p className="font-['Inter'] text-xs text-gray-500">
+            <p className="font-['Inter'] text-xs text-gray-500 dark:text-gray-400">
               {currentChat?.description || ""}
             </p>
           </div>
@@ -271,7 +265,7 @@ const ChatWindow = ({
           return (
             <>
               {shouldShowDateSeparator && (
-                <div className="font-['Inter'] text-xs font-semibold flex justify-center items-center mb-4">
+                <div className="font-['Inter'] text-xs font-semibold flex justify-center items-center mb-4 text-gray-600 dark:text-gray-400">
                   {currentDate.toLocaleDateString("en-US", {
                     month: "long",
                     day: "numeric",
@@ -303,14 +297,15 @@ const ChatWindow = ({
         onChange={handleImageChange}
       />
 
-      <div className="p-4 bg-white border-t flex items-center">
+      <div className="p-4 bg-white dark:bg-slate-800 border-t flex items-center">
         <IconButton
-          icon={<FaPaperclip color="#081C48" />}
+          icon={<FaPaperclip className="text-primary-600 dark:text-primary-400" />}
           className="hidden sm:block"
           onClick={handleFileButtonClick}
         />
+
         <IconButton
-          icon={<FaImage color="#081C48" />}
+          icon={<FaImage className="text-primary-600 dark:text-primary-400" />}
           className="hidden sm:block"
           onClick={handleImageButtonClick}
         />
@@ -327,18 +322,22 @@ const ChatWindow = ({
             isRecording ? handleSpeechToTextStop : handleSpeechToTextStart
           }
         />
-        <div className="flex-1 mx-2">
-          <textarea
-            className="font-['Inter'] placeholder-[#65686C] border rounded-lg p-2 w-full resize-none focus:outline-none focus:ring-2 focus:ring-yellow-300"
-            placeholder="Type a message..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            rows={1}
-          />
+        <div className="p-4 bg-surface dark:bg-surface border-t border-border flex items-center">
+          {/* Button icons */}
+          <div className="flex-1 mx-2">
+            <textarea
+              className="font-['Inter'] placeholder-text-tertiary dark:placeholder-text-tertiary border border-border rounded-lg p-2 w-full resize-none focus:outline-none focus:ring-2 focus:ring-primary bg-surface dark:bg-surface-elevated text-text-primary dark:text-text-primary"
+              placeholder="Type a message..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              rows={1}
+            />
+          </div>
+          {/* Send button */}
         </div>
         <IconButton
-          icon={<FaPaperPlane color="#081C48" />}
+          icon={<FaPaperPlane className="text-primary-600 dark:text-primary-400" />}
           onClick={onSendMessage}
         />
       </div>

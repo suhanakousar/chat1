@@ -45,7 +45,7 @@
   }
   
   .dark {
-    /* Dark Mode Colors */
+    /* Dark Mode Colors - Enhanced for Chat UI */
     --primary: #818CF8;
     --primary-hover: #6366F1;
     --primary-light: #4F46E5;
@@ -56,13 +56,13 @@
     --warning: #FBBF24;
     --error: #F87171;
     --info: #60A5FA;
-    --background: #0F172A;
-    --surface: #1E293B;
-    --surface-elevated: #334155;
-    --text-primary: #F1F5F9;
-    --text-secondary: #CBD5E1;
-    --text-tertiary: #94A3B8;
-    --border: #334155;
+    --background: #0F172A; /* Current dark background */
+    --surface: #1E293B;   /* Slightly lighter for UI elements */
+    --surface-elevated: #334155; /* For elevated elements like cards */
+    --text-primary: #F1F5F9; /* Very light gray for main text */
+    --text-secondary: #CBD5E1; /* Light gray for secondary text */
+    --text-tertiary: #94A3B8; /* Medium gray for tertiary text */
+    --border: #334155; /* Border color matching surface-elevated */
     --border-hover: #475569;
     
     /* Dark Mode Shadows */

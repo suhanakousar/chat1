@@ -16,13 +16,13 @@ import { API_BASE_URL } from "../config/api";
 const ChatRoom = () => {
   const EmptyState = () => {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-gray-50">
+      <div className="flex-1 flex flex-col items-center justify-center bg-background dark:bg-background transition-colors">
         <div className="text-center p-8">
           <div className="text-6xl mb-4">💬</div>
-          <h2 className="text-2xl font-bold text-gray-700 mb-2">
+          <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-2">
             Welcome to Chatlas!
           </h2>
-          <p className="text-gray-500 mb-6">
+          <p className="text-gray-500 dark:text-gray-400 mb-6">
             Select a conversation or start a new one
           </p>
           <button
@@ -58,7 +58,7 @@ const ChatRoom = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg w-full max-w-md mx-4 shadow-lg">
+        <div className="bg-white dark:bg-slate-800 rounded-lg w-full max-w-md mx-4 shadow-lg">
           <div className="font-['Montserrat'] p-4 border-b flex justify-between items-center relative">
             <h2 className="text-xl font-bold">New Chat</h2>
             <button
@@ -855,8 +855,9 @@ const ChatRoom = () => {
 
   if (showJoinRequest && invitedChatDetails) {
     return (
-      <div className="flex flex-col h-screen bg-gray-100">
+      <div className="flex flex-col h-screen bg-background dark:bg-background transition-colors">
         <NavBar />
+
         <div className="flex flex-1 overflow-hidden">
           {showSidebar && (
             <Sidebar
@@ -883,7 +884,7 @@ const ChatRoom = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col h-screen bg-neutral-50 dark:bg-slate-900 transition-colors">
       <NavBar />
 
       <div className="flex flex-1 overflow-hidden">
