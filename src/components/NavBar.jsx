@@ -134,6 +134,13 @@ const NavBar = () => {
                 {isDropdownVisible && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl dark:shadow-slate-900/50 p-2 animate-slide-down border border-neutral-200 dark:border-neutral-700">
                     <button
+                      onClick={() => navigate("/profile")}
+                      className="flex items-center space-x-2 w-full px-4 py-2.5 text-left rounded-lg hover:bg-neutral-100 dark:hover:bg-slate-700 transition-colors text-neutral-700 dark:text-neutral-200"
+                    >
+                      <FaUser />
+                      <span>Profile</span>
+                    </button>
+                    <button
                       onClick={handleLogout}
                       className="flex items-center space-x-2 w-full px-4 py-2.5 text-left rounded-lg hover:bg-neutral-100 dark:hover:bg-slate-700 transition-colors text-neutral-700 dark:text-neutral-200"
                     >
