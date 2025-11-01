@@ -1,5 +1,5 @@
 import logo from "./Logo.png";
-import chatlas from "./Chatlas.png";
+import chatlas from "./UnifyChat.png";
 import visibility from "./Visibility.png";
 import visibilityOff from "./InvisibilityOff.png";
 import menu from "./menu.svg";

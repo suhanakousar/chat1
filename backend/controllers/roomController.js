@@ -394,14 +394,22 @@ const updateReadStatus = async (req, res) => {
 
 const loadMessages = async (req, res) => {
     try {
-        const { chatroomId } = req.params;
+        const { chatId } = req.params;
         const cursor = req.query.cursor || null;
         const limit = 20;
 
+        // Check if chatroom exists
+        const chatroom = await prisma.chatRoom.findUnique({
+            where: { id: chatId }
+        });
+        if (!chatroom) {
+            return res.status(404).json({ error: "Chat room not found" });
+        }
+
         console.log(cursor)
-    
+
         const messages = await prisma.message.findMany({
-            where: { chat_id: chatroomId },
+            where: { chat_id: chatId },
             orderBy: { created_at: "desc" },
             take: limit,
             ...(cursor && {
@@ -417,16 +425,16 @@ const loadMessages = async (req, res) => {
             },
             },
         });
-    
+
         const oldest = await prisma.message.findFirst({
-            where: { chat_id: chatroomId },
+            where: { chat_id: chatId },
             orderBy: { created_at: "asc" },
             select: { id: true },
         });
-    
+
         console.log(messages)
         const hasMore = oldest && !messages.some((msg) => msg.id === oldest?.id);
-        
+
         return res.json({
             messages: messages.reverse(),
             cursor: hasMore ? messages[0]?.id : null,
@@ -637,6 +645,49 @@ const uploadFile = async (req, res) => {
 };
 
 
+// delete chat room
+const deleteRoom = async (req, res) => {
+    try {
+        const { chatId } = req.params;
+        const { userId } = req.body;
+
+        // Check if user is admin
+        const chatRoom = await prisma.chatRoom.findUnique({
+            where: { id: chatId }
+        });
+
+        if (!chatRoom) {
+            return res.status(404).json({ error: "Chat room not found" });
+        }
+
+        if (chatRoom.admin_id !== userId) {
+            return res.status(403).json({ error: "Only admin can delete the chat room" });
+        }
+
+        // Delete all related data
+        await prisma.message.deleteMany({
+            where: { chat_id: chatId }
+        });
+
+        await prisma.chatRoomRead.deleteMany({
+            where: { chat_id: chatId }
+        });
+
+        await prisma.chatRoomMember.deleteMany({
+            where: { chat_id: chatId }
+        });
+
+        await prisma.chatRoom.delete({
+            where: { id: chatId }
+        });
+
+        return res.json({ message: "Chat room deleted successfully" });
+    } catch (err) {
+        console.error("Error deleting chat room:", err.message);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 module.exports = {
     createRoom,
     requestJoin,
@@ -648,6 +699,7 @@ module.exports = {
     handleMemberRequest,
     removeMember,
     leaveRoom,
+    deleteRoom,
     getReadStatus,
     updateReadStatus,
     getMembers,

@@ -7,16 +7,14 @@ import Mission from "../components/home/Mission";
 import Service from "../components/home/Service";
 import NavBar from "../components/NavBar";
 import Contact from "../components/home/Contact";
-import ActivityDashboard from "../components/home/ActivityDashboard";
 
 const Home = () => {
   const serviceRef = useRef(null);
 
   return (
-    <div className="bg-neutral-50 dark:bg-slate-900 transition-colors">
+    <div className="bg-neutral-50 dark:bg-slate-900">
       <NavBar />
       <AutoHeroDemo /> {/* Replace Hero with AutoHeroDemo */}
-      <ActivityDashboard />
       <Mission />
       <Service ref={serviceRef} />
       <Feature />

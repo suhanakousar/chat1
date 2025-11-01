@@ -90,7 +90,7 @@ const Signin = () => {
             <div className="p-2 bg-white/10 backdrop-blur-sm rounded-2xl group-hover:bg-white/20 transition-all">
               <img src={logo} alt="Chatlas Logo" className="w-10 h-10" />
             </div>
-            <span className="text-3xl font-bold text-white">Chatlas</span>
+            <span className="text-3xl font-bold text-white">Chat</span>
           </div>
         </div>
 
@@ -143,7 +143,7 @@ const Signin = () => {
 
         {/* Footer */}
         <div className="relative z-10 text-white/60 text-sm">
-          © 2025 Chatlas. All rights reserved.
+          © 2025 UnifyChat. All rights reserved.
         </div>
       </div>
 
@@ -153,7 +153,7 @@ const Signin = () => {
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center justify-center space-x-3 p-4 bg-white dark:bg-slate-800 rounded-2xl shadow-lg">
             <img src={logo} alt="Chatlas Logo" className="w-10 h-10" />
-            <span className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Chatlas</span>
+            <span className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">UnifyChatChat</span>
           </div>
 
           {/* Header */}

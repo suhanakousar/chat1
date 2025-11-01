@@ -196,7 +196,7 @@ const Profile = () => {
                       className="relative w-48 h-48 mx-auto"
                     >
                       <img
-                        src={imagePreview || profileImage || 'https://via.placeholder.com/200'}
+                        src={imagePreview || profileImage || 'https://via.placeholder.com/200x200.png'}
                         alt="Profile"
                         className="w-full h-full rounded-full object-cover border-4 border-primary-500/50 shadow-large"
                       />

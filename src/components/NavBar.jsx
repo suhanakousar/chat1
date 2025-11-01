@@ -59,17 +59,19 @@ const NavBar = () => {
           )}
 
           {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-            onClick={() => {
-              setActive("Home");
-              window.scrollTo(0, 0);
-            }}
-          >
-            <img src={logo} alt="Chatlas" className="h-10 w-10" />
-            <span className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 font-['Montserrat']">Chatlas</span>
-          </Link>
+          {!pathname.startsWith('/Chat') && (
+            <Link
+              to="/"
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+              onClick={() => {
+                setActive("Home");
+                window.scrollTo(0, 0);
+              }}
+            >
+              <img src={logo} alt="Chatlas" className="h-10 w-10" />
+              <span className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 font-['Montserrat']">Chat</span>
+            </Link>
+          )}
 
           {/* Desktop Navigation */}
           <ul className="hidden md:flex items-center space-x-1">

@@ -1,10 +1,11 @@
-# Chatlas Frontend
+# UnifyChat Frontend
 
 ## Inspiration
-Chatlas is inspired by the growing need for seamless communication in a globalized world where language differences often create barriers. We wanted to build a tool that connects people across languages—whether for casual chats, international collaboration, or community engagement—making it feel like everyone is speaking the same language.
+UnifyChat is inspired by the growing need for seamless communication in a globalized world where language differences often create barriers. We wanted to build a tool that connects people across languages—whether for casual chats, international collaboration, or community engagement—making it feel like everyone is speaking the same language.
 
 ## What It Does
-Chatlas is a real-time group chat web application that automatically translates messages into the preferred language of each participant. Users can create or join chat rooms via unique invitation links and communicate freely, regardless of the language they use.
+
+UnifyChat is a real-time group chat web application that automatically translates messages into the preferred language of each participant. Users can create or join chat rooms via unique invitation links and communicate freely, regardless of the language they use.
 
 ### Key Features
 - **Real-Time Messaging**: Powered by WebSockets (Socket.IO) for instant communication.
@@ -16,7 +17,8 @@ Chatlas is a real-time group chat web application that automatically translates 
 - **Lazy Load Messages**: Older messages are loaded on scroll, improving performance and user experience, especially in large conversations.
 
 ## How We Built It
-We developed Chatlas using a full-stack approach:
+
+We developed UnifyChat using a full-stack approach:
 
 - **Frontend**: React (Vite) and Tailwind CSS for UI/UX.
 - **Backend**: Node.js and Express.js handle the API and real-time socket connections.
@@ -40,7 +42,7 @@ The app uses a Client-Server architecture, with WebSocket (Socket.IO) handling r
 - Collaborative full-stack development using GitHub and Copilot.
 - Handling WebSocket communication for real-time updates.
 
-## What's Next for Chatlas
+## What's Next for UnifyChat
 - Add support for chat summarization using Azure OpenAI.
 - Implement file sharing in rooms (or emotes sending).
 - Improve testing coverage and CI/CD pipeline.
@@ -88,7 +90,7 @@ npm run dev
 ```
 
 ## Connect with Backend to Run the Full App:
-To run Chatlas fully, set up the frontend by following instructions in the **[Backend Repository](https://github.com/MinhhQuangg/Azure_App_BE)**.
+To run UnifyChat fully, set up the frontend by following instructions in the **[Backend Repository](https://github.com/MinhhQuangg/Azure_App_BE)**.
 
 ## Note
 Ensure you have Node.js installed before running the commands.

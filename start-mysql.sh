@@ -28,9 +28,9 @@ sleep 5
 # Create database and user if needed
 echo "Setting up database..."
 mysql --socket="$SOCKET_PATH" -u root <<EOF
-CREATE DATABASE IF NOT EXISTS chatlas_db;
-GRANT ALL PRIVILEGES ON chatlas_db.* TO 'root'@'127.0.0.1' IDENTIFIED BY 'suhana2005';
-GRANT ALL PRIVILEGES ON chatlas_db.* TO 'root'@'localhost' IDENTIFIED BY 'suhana2005';
+CREATE DATABASE IF NOT EXISTS unifychat_db;
+GRANT ALL PRIVILEGES ON unifychat_db.* TO 'root'@'127.0.0.1' IDENTIFIED BY 'suhana2005';
+GRANT ALL PRIVILEGES ON unifychat_db.* TO 'root'@'localhost' IDENTIFIED BY 'suhana2005';
 FLUSH PRIVILEGES;
 EOF
 

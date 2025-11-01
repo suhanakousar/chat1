@@ -1,8 +1,8 @@
-# Chatlas - Real-Time Multilingual Chat Application
+# UnifyChat - Real-Time Multilingual Chat Application
 
 ## Overview
 
-Chatlas is a real-time group chat web application that automatically translates messages into each participant's preferred language. The application enables seamless cross-language communication using WebSocket connections for instant messaging and Azure AI services for translation and speech-to-text capabilities.
+UnifyChat is a real-time group chat web application that automatically translates messages into each participant's preferred language. The application enables seamless cross-language communication using WebSocket connections for instant messaging and Azure AI services for translation and speech-to-text capabilities.
 
 The system consists of a React frontend (Vite + Tailwind CSS) and a Node.js/Express backend with Socket.IO for real-time communication. Messages are stored in their original language and translated on-demand for each recipient based on their language preference.
 

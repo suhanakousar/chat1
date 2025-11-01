@@ -1,4 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useTheme } from "../../context/ThemeContext";
+import lightHome from "../../assets/light home.jpg";
+import darkHome from "../../assets/dark home.png";
 
 /* ------------------------- 
    RotatingWord (hero headline) 
@@ -110,7 +113,7 @@ const AutoPhraseCloud = ({ phrases = defaultPhrases, autoInterval = 2400, playAu
 
       // set flag to false after small delay
       setTimeout(() => (busyRef.current = false), 600);
-    } catch (err) {
+    } catch {
       busyRef.current = false;
       setIsAudioAllowed(false);
     }
@@ -196,14 +199,24 @@ const AutoPhraseCloud = ({ phrases = defaultPhrases, autoInterval = 2400, playAu
   );
 };
 
-/* ------------------------- 
+/* -------------------------
    Main Hero Component
    ------------------------- */
 const AutoHeroDemo = () => {
+  const { theme } = useTheme();
+
   return (
     <section className="relative overflow-hidden bg-gray-900 text-white py-16 md:py-24">
-      {/* Background gradient effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 opacity-90"></div>
+      {/* Background image based on theme */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-300"
+        style={{
+          backgroundImage: `url(${theme === 'dark' ? darkHome : lightHome})`,
+        }}
+      ></div>
+      {/* Background gradient effect - very dark overlay for light theme to heavily dim image */}
+      <div className={`absolute inset-0 ${theme === 'dark' ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 opacity-90' : 'bg-gradient-to-br from-black/80 via-gray-900/70 to-black/80 opacity-98'}`}></div>
+
       
       {/* Accent color blobs (positioned absolutely) */}
       <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary-500/10 rounded-full filter blur-3xl"></div>
@@ -215,16 +228,11 @@ const AutoHeroDemo = () => {
           <h1 className="text-3xl md:text-5xl font-bold mb-6">
             <RotatingWord /> to Translation
           </h1>
-          
+
           {/* Main tagline */}
           <h2 className="text-2xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
             Break Language Barriers — Connect Globally with AI
           </h2>
-          
-          {/* Brief description */}
-          <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-            Instant, accurate translations powered by advanced AI. Experience communication without boundaries.
-          </p>
           
           {/* Auto-demo phrase cloud */}
           <AutoPhraseCloud />

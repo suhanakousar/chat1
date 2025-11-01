@@ -36,7 +36,7 @@ export const Footer = () => {
           <div className="col-span-2 space-y-6">
             <div className="flex items-center space-x-3">
               <img src={logo} alt="Chatlas" className="h-12 w-12" />
-              <span className="text-2xl font-display font-bold text-gradient">Chatlas</span>
+              <span className="text-2xl font-display font-bold text-gradient">UnifyChat</span>
             </div>
             <p className="text-neutral-300 max-w-xs text-lg leading-relaxed">
               Breaking language barriers with AI-powered real-time translation. Connect with anyone, anywhere.
@@ -125,16 +125,16 @@ export const Footer = () => {
         <div className="pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-neutral-400">
-              © 2025 <span className="text-white font-semibold">Chatlas</span>. All Rights Reserved.
+              © 2025 <span className="text-white font-semibold">UnifyChat</span>. All Rights Reserved.
             </p>
             <a
-              href="mailto:chatlashelp@gmail.com"
+              href="mailto:unifychathelp@gmail.com"
               className="group flex items-center space-x-2 text-neutral-300 hover:text-primary-400 transition-all duration-300"
             >
               <div className="p-2 rounded-xl bg-white/5 group-hover:bg-primary-600/20 border border-white/10 group-hover:border-primary-500/50 transition-all duration-300">
                 <FaEnvelope />
               </div>
-              <span className="font-medium">chatlashelp@gmail.com</span>
+              <span className="font-medium">unifychathelp@gmail.com</span>
             </a>
           </div>
         </div>

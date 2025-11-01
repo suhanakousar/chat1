@@ -30,4 +30,5 @@ router.get('/google/fail', (req, res) => {
 
 router.post('/google', googleLogin);
 router.get('/me', authController.protect, authController.getMe);
+router.put('/update', authController.protect, authController.updateUser);
 module.exports = router;

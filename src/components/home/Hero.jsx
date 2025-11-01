@@ -13,7 +13,7 @@ const Hero = ({ serviceRef }) => {
   
   const examplePhrases = [
     { en: "Hello, how are you?", es: "Hola, ¿cómo estás?", fr: "Bonjour, comment allez-vous?", de: "Hallo, wie geht es dir?" },
-    { en: "Welcome to Chatlas", es: "Bienvenido a Chatlas", fr: "Bienvenue à Chatlas", de: "Willkommen bei Chatlas" },
+    { en: "Welcome to UnifyChat", es: "Bienvenido a UnifyChat", fr: "Bienvenue à UnifyChat", de: "Willkommen bei UnifyChat" },
     { en: "Let's start chatting", es: "Empecemos a chatear", fr: "Commençons à discuter", de: "Lass uns anfangen zu chatten" },
   ];
 

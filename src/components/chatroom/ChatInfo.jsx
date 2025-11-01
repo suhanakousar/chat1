@@ -15,21 +15,20 @@ import {
 } from "react-icons/fa";
 import { showToastError, showToastSuccess } from "../common/ShowToast";
 import axios from "axios";
-import { API_BASE_URL } from "../../config/api";
 
 const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-surface dark:bg-surface rounded-lg w-full max-w-md mx-4 shadow-lg py-8 relative">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg w-full max-w-md mx-4 shadow-lg py-8 relative">
         <button
           onClick={onClose}
-          className="text-text-tertiary hover:text-text-secondary dark:text-text-tertiary dark:hover:text-text-secondary absolute right-4 top-4"
+          className="text-gray-500 hover:text-gray-700 absolute right-4 top-4"
         >
           <FaTimes />
         </button>
-        <h2 className="font-['Montserrat'] w-full text-center text-xl font-bold mb-5 text-text-primary dark:text-text-primary">
+        <h2 className="font-['Montserrat'] w-full text-center text-xl font-bold mb-5">
           {title}
         </h2>
         {children}
@@ -43,10 +42,10 @@ const ActionButton = ({ onClick, primary, children, className }) => (
     onClick={onClick}
     className={`font-bold font-['Montserrat'] w-[50%] rounded-md py-2 ${
       primary
-        ? "text-white bg-primary-500 hover:bg-primary-600 dark:bg-primary-600 dark:hover:bg-primary-700"
-        : "bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-error"
+        ? "text-black bg-yellow-400 hover:bg-yellow-300"
+        : "bg-[#E8E8E8] hover:bg-gray-300 text-[#A30609]"
     } ${className || ""}`}
-    style={primary ? {} : { border: "1px solid var(--border)" }}
+    style={primary ? {} : { border: "1px solid rgba(0,0,0,0.3)" }}
   >
     {children}
   </button>
@@ -82,16 +81,16 @@ const MemberItem = ({ member, currentUserId, isAdmin, onUserInfoClick }) => {
               <span className="font-['Inter'] text-xs text-gray-500 mr-2">
                 Admin
               </span>
-          <button
-            className="text-gray-500 dark:text-gray-400"
-            onClick={() => onUserInfoClick(member)}
-          >
-            <FaEllipsisH size={16} />
-          </button>
+              <button
+                className="text-gray-500"
+                onClick={() => onUserInfoClick(member)}
+              >
+                <FaEllipsisH size={16} />
+              </button>
             </div>
           ) : (
             <button
-              className="text-gray-500 dark:text-gray-400"
+              className="text-gray-500"
               onClick={() => onUserInfoClick(member)}
             >
               <FaEllipsisH size={16} />
@@ -128,7 +127,7 @@ const ChatInfo = ({
       try {
         // fetch chat room info
         const response = await axios.get(
-          `${API_BASE_URL}/chatroom/${chatId}`
+          `http://localhost:3000/chatroom/${chatId}`
         );
         const chatRoom = response.data.chatRoom;
 
@@ -172,7 +171,7 @@ const ChatInfo = ({
   }, [chatId]);
 
   axios
-    .get(`${API_BASE_URL}/chatroom/${chatId}/admin/${userId}`)
+    .get(`http://localhost:3000/chatroom/${chatId}/admin/${userId}`)
     .then((response) => {
       const isAdmin = response.data?.isAdmin;
       setIsCurrentUserAdmin(isAdmin);
@@ -183,7 +182,7 @@ const ChatInfo = ({
       console.log("Left group", chatId);
 
       await axios.delete(
-        `${API_BASE_URL}/chatroom/${chatId}/leave/${userId}`
+        `http://localhost:3000/chatroom/${chatId}/leave/${userId}`
       );
 
       showToastSuccess(`Left group successfully`);
@@ -209,7 +208,7 @@ const ChatInfo = ({
 
       if (action === "makeAdmin") {
         await axios.put(
-          `${API_BASE_URL}/chatroom/${chatId}/changeAdmin`,
+          `http://localhost:3000/chatroom/${chatId}/changeAdmin`,
           {
             newAdminId: userId,
           }
@@ -225,7 +224,7 @@ const ChatInfo = ({
         setIsCurrentUserAdmin(false);
       } else if (action === "removeMember") {
         await axios.delete(
-          `${API_BASE_URL}/chatroom/${chatId}/members/${userId}`
+          `http://localhost:3000/chatroom/${chatId}/members/${userId}`
         );
         setGroupData((prev) => ({
           ...prev,
@@ -253,7 +252,7 @@ const ChatInfo = ({
 
         // send backend accept request
         await axios.put(
-          `${API_BASE_URL}/chatroom/${chatId}/memberRequest`,
+          `http://localhost:3000/chatroom/${chatId}/memberRequest`,
           {
             userId: userId,
             status: "approved",
@@ -261,7 +260,7 @@ const ChatInfo = ({
         );
       } else {
         await axios.put(
-          `${API_BASE_URL}/chatroom/${chatId}/memberRequest`,
+          `http://localhost:3000/chatroom/${chatId}/memberRequest`,
           {
             userId: userId,
             status: "rejected",
@@ -308,7 +307,7 @@ const ChatInfo = ({
       }
 
       // update backend
-      await axios.put(`${API_BASE_URL}/chatroom/${chatId}`, {
+      await axios.put(`http://localhost:3000/chatroom/${chatId}`, {
         name: newGroupName,
       });
 
@@ -334,7 +333,7 @@ const ChatInfo = ({
   if (loading) {
     return (
       <div
-        className={`xl:pt-18 lg:pt-16 md:pt-12 sm:pt-8 pt-6 mt-10 lg:mt-2 md:mt-5 flex flex-col w-80 border-l border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 items-center justify-center`}
+        className={`xl:pt-18 lg:pt-16 md:pt-12 sm:pt-8 pt-6 mt-10 lg:mt-2 md:mt-5 flex flex-col w-80 border-l border-gray-200 bg-white items-center justify-center`}
       >
         <p>Loading...</p>
       </div>
@@ -344,7 +343,7 @@ const ChatInfo = ({
   if (error) {
     return (
       <div
-        className={`xl:pt-18 lg:pt-16 md:pt-12 sm:pt-8 pt-6 mt-10 lg:mt-2 md:mt-5 flex flex-col w-80 border-l border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 items-center justify-center`}
+        className={`xl:pt-18 lg:pt-16 md:pt-12 sm:pt-8 pt-6 mt-10 lg:mt-2 md:mt-5 flex flex-col w-80 border-l border-gray-200 bg-white items-center justify-center`}
       >
         <p className="text-red-500">{error}</p>
         <button
@@ -367,7 +366,7 @@ const ChatInfo = ({
 
   return (
     <div
-      className={`xl:pt-18 lg:pt-16 md:pt-12 sm:pt-8 pt-6 mt-10 lg:mt-2 md:mt-5 flex flex-col w-80 border-l border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-auto`}
+      className={`xl:pt-18 lg:pt-16 md:pt-12 sm:pt-8 pt-6 mt-10 lg:mt-2 md:mt-5 flex flex-col w-80 border-l border-gray-200 bg-white overflow-auto`}
     >
       <div className="flex items-center justify-between p-4 border-b">
         {isEditingName ? (
@@ -376,20 +375,20 @@ const ChatInfo = ({
               type="text"
               value={newGroupName}
               onChange={(e) => setNewGroupName(e.target.value)}
-              className="font-['Montserrat'] text-lg font-bold w-full p-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-accent-500"
+              className="font-['Montserrat'] text-lg font-bold w-full p-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-yellow-300"
               autoFocus
               maxLength={50}
             />
             <div className="flex ml-2">
               <button
-                className="text-green-500 dark:text-green-400 mr-1"
+                className="text-green-500 mr-1"
                 onClick={handleSaveName}
                 title="Save"
               >
                 <FaCheck size={16} />
               </button>
               <button
-                className="text-red-500 dark:text-red-400"
+                className="text-red-500"
                 onClick={handleCancelNameEdit}
                 title="Cancel"
               >
@@ -399,12 +398,12 @@ const ChatInfo = ({
           </div>
         ) : (
           <>
-            <h2 className="font-['Montserrat'] text-2xl font-bold text-gray-900 dark:text-gray-200">
+            <h2 className="font-['Montserrat'] text-2xl font-bold">
               {groupData?.name}
             </h2>
             {isCurrentUserAdmin && (
               <button
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="text-gray-500 hover:text-gray-700"
                 onClick={handleEditNameClick}
                 title="Edit group name"
               >
@@ -420,7 +419,7 @@ const ChatInfo = ({
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
-          className="font-['Inter'] w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-accent-500"
+          className="font-['Inter'] w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-yellow-300"
         >
           <option>English</option>
           <option>Spanish</option>
@@ -474,13 +473,13 @@ const ChatInfo = ({
               </div>
               <div className="flex">
                 <button
-                  className="text-green-500 dark:text-green-400 mr-2"
+                  className="text-green-500 mr-2"
                   onClick={() => handleJoinRequest(request.id, true)}
                 >
                   <FaCheck size={16} />
                 </button>
                 <button
-                  className="text-red-500 dark:text-red-400"
+                  className="text-red-500"
                   onClick={() => handleJoinRequest(request.id, false)}
                 >
                   <FaTimes size={16} />
@@ -495,7 +494,7 @@ const ChatInfo = ({
         <h3 className="font-['Montserrat'] font-bold mb-2">Invite Link</h3>
         <div className="flex items-center">
           <p className="text-xs truncate mr-2">{groupData?.inviteLink}</p>
-          <button className="text-[#65686C] dark:text-gray-400" onClick={handleCopyInviteLink}>
+          <button className="text-[#65686C]" onClick={handleCopyInviteLink}>
             <FaCopy size={16} />
           </button>
         </div>
@@ -532,9 +531,9 @@ const ChatInfo = ({
         title="User Info"
       >
         <div className="text-center mb-6">
-          <div className="font-medium text-gray-700 dark:text-gray-300">Joined</div>
-          <p className="text-gray-600 dark:text-gray-400">{formatDate(selectedUser?.timestamp)}</p>
-          <p className="text-gray-600 dark:text-gray-400">{selectedUser?.email}</p>
+          <div className="font-medium text-gray-700">Joined</div>
+          <p className="text-gray-600">{formatDate(selectedUser?.timestamp)}</p>
+          <p className="text-gray-600">{selectedUser?.email}</p>
         </div>
         {isCurrentUserAdmin && (
           <div className="flex flex-col gap-5 items-center justify-center w-full">

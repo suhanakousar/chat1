@@ -111,6 +111,38 @@ exports.getMe = async (req, res) => {
   }
 };
 
+exports.updateUser = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { given_name, email, profile_picture } = req.body;
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        given_name: given_name || undefined,
+        email: email || undefined,
+        profile_picture: profile_picture || undefined,
+      },
+    });
+
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        user: {
+          id: updatedUser.id,
+          username: updatedUser.given_name,
+          email: updatedUser.email,
+          profile_picture: updatedUser.profile_picture,
+          created_at: updatedUser.created_at,
+        },
+      },
+    });
+  } catch (err) {
+    console.error('Update user error:', err);
+    return res.status(500).json({ message: 'Server error during user update' });
+  }
+};
+
 exports.protect = async (req, res, next) => {
   try {
     let token;

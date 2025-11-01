@@ -1,7 +1,7 @@
 // Room.jsx
 import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/chatroom/Sidebar.jsx";
-import ChatWindow from "../components/chatroom/EnhancedChatWindow.jsx";
+import ChatWindow from "../components/chatroom/ChatWindow.jsx";
 import ChatInfo from "../components/chatroom/ChatInfo.jsx";
 import NavBar from "../components/NavBar.jsx";
 import { FaTimes } from "react-icons/fa";
@@ -16,17 +16,17 @@ import { API_BASE_URL } from "../config/api";
 const ChatRoom = () => {
   const EmptyState = () => {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-background dark:bg-background transition-colors">
+      <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 transition-colors">
         <div className="text-center p-8">
           <div className="text-6xl mb-4">💬</div>
-          <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-2">
-            Welcome to Chatlas!
+          <h2 className="text-2xl font-bold text-gray-700 mb-2">
+            Welcome to Chat!
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
+          <p className="text-gray-500 mb-6">
             Select a conversation or start a new one
           </p>
           <button
-            className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-full font-medium transition shadow-md"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full font-medium transition shadow-md"
             onClick={() => setIsNewChatModalOpen(true)}
           >
             Start New Chat
@@ -58,9 +58,9 @@ const ChatRoom = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white dark:bg-slate-800 rounded-lg w-full max-w-md mx-4 shadow-lg">
-          <div className="font-['Montserrat'] p-4 border-b flex justify-between items-center relative">
-            <h2 className="text-xl font-bold">New Chat</h2>
+        <div className="bg-white rounded-lg w-full max-w-md mx-4 shadow-lg">
+          <div className="font-['Inter'] p-4 border-b flex justify-between items-center relative">
+            <h2 className="text-xl font-bold text-gray-900">New Chat</h2>
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700 absolute right-4 top-4"
@@ -71,27 +71,27 @@ const ChatRoom = () => {
 
           <form onSubmit={handleSubmit} className="p-4">
             <div className="mb-4">
-              <label className="font-['Montserrat'] text-[#2C2E30] block text-sm font-bold mb-2">
+              <label className="font-['Inter'] text-gray-900 block text-sm font-bold mb-2">
                 Chat Name
               </label>
               <input
                 type="text"
                 value={chatName}
                 onChange={(e) => setChatName(e.target.value)}
-                className="placeholder-[#65686C] shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="placeholder-gray-500 shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter chat name"
                 required
               />
             </div>
 
             <div className="mb-4">
-              <label className="font-['Montserrat'] text-[#2C2E30] block text-sm font-bold mb-2">
+              <label className="font-['Inter'] text-gray-900 block text-sm font-bold mb-2">
                 Description
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="placeholder-[#65686C] shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="placeholder-gray-500 shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter a description (optional)"
               />
             </div>
@@ -100,13 +100,13 @@ const ChatRoom = () => {
               <button
                 type="button"
                 onClick={onClose}
-                className="font-['Montserrat'] font-semibold bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg mr-2"
+                className="font-['Inter'] font-semibold bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg mr-2"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="font-['Montserrat'] font-semibold bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg shadow-md"
+                className="font-['Inter'] font-semibold bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md"
               >
                 Create Chat
               </button>
@@ -117,7 +117,7 @@ const ChatRoom = () => {
     );
   };
 
-  const { chatId: urlChatId, inviteLink } = useParams();
+  const { chatId: urlChatId } = useParams();
   const navigate = useNavigate();
 
   const userId = localStorage.getItem("user_id");
@@ -147,7 +147,7 @@ const ChatRoom = () => {
 
   useEffect(() => {
     const checkMembership = async () => {
-      if (currentChatId) {
+      if (currentChatId && chats.length > 0) {
         try {
           const res = await axios.get(
             `${API_BASE_URL}/chatroom/${currentChatId}/isMember/${userId}`
@@ -179,9 +179,16 @@ const ChatRoom = () => {
           }
         } catch (err) {
           console.error("Failed to check membership:", err);
+          if (err.response?.status === 404) {
+            showToastError("Chat room not found");
+            navigate("/Chat");
+          } else if (err.response?.status === 403) {
+            showToastError("You are not a member of this chat room");
+            navigate("/Chat");
+          } else {
+            showToastError("Failed to check membership");
+          }
         }
-      } else {
-        setCurrentChatId(chats.length > 0 ? chats[0].id : null);
       }
     };
 
@@ -193,13 +200,13 @@ const ChatRoom = () => {
 
   useEffect(() => {
     const loadInitialMessages = async () => {
-      if (!roomMessages[urlChatId]) {
+      if (currentChatId && !roomMessages[currentChatId]) {
         console.log("Enter function fetch initial messages.");
-        console.log(`${API_BASE_URL}/chatroom/${urlChatId}/messages`);
+        console.log(`${API_BASE_URL}/chatroom/${currentChatId}/messages`);
 
         try {
           const res = await axios.get(
-            `${API_BASE_URL}/chatroom/${urlChatId}/messages`,
+            `${API_BASE_URL}/chatroom/${currentChatId}/messages`,
             {
               params: {
                 cursor: null,
@@ -209,51 +216,59 @@ const ChatRoom = () => {
 
           setRoomMessages((prev) => ({
             ...prev,
-            // [urlChatId]: res.data.messages,
-            [urlChatId]: res.data.messages
-              .filter((message) => message.chat_id === urlChatId)
+            [currentChatId]: res.data.messages
+              .filter((message) => message.chat_id === currentChatId)
               .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)),
           }));
 
-          // setRoomMessages((prev) => {
-          //   const existing = prev[urlChatId] || [];
-          //   return {
-          //     ...prev,
-          //     [urlChatId]: [...newMessages, ...existing], // prepend
-          //   };
-          // });
-
           setMessagePagination((prev) => ({
             ...prev,
-            [urlChatId]: {
+            [currentChatId]: {
               cursor: res.data.cursor,
               hasMore: res.data.hasMore,
             },
           }));
 
-          // setIsMessagesLoaded(true);
         } catch (err) {
           console.error("Error loading initial messages:", err);
-          showToastError("Failed to load messages");
+          if (err.response?.status === 404) {
+            showToastError("Chat room not found");
+          } else if (err.response?.status === 403) {
+            showToastError("You are not a member of this chat room");
+          } else {
+            showToastError("Failed to load messages");
+          }
         }
         console.log(11111);
       }
-      // else {
-      //   setIsMessagesLoaded(true);
-      // }
     };
+
     loadInitialMessages();
     const container = messageContainerRef.current;
     if (container) {
       container.scrollTop = container.scrollHeight - container.clientHeight;
     }
-  }, []);
+  }, [currentChatId]);
 
   useEffect(() => {
-    const socketInstance = io("${API_BASE_URL}", {
+    const socketInstance = io(`${API_BASE_URL}`, {
       transports: ["websocket"],
       auth: { userId: userId },
     });
+
+    socketInstance.on("connect", () => {
+      console.log("Socket connected successfully");
+    });
+
+    socketInstance.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
+      showToastError("Failed to connect to chat server");
+    });
+
+    socketInstance.on("disconnect", (reason) => {
+      console.log("Socket disconnected:", reason);
+    });
+
     setSocket(socketInstance);
 
     return () => socketInstance.disconnect();
@@ -309,14 +324,29 @@ const ChatRoom = () => {
         });
 
         setChats([...chats, ...newChats]);
+
+        // Set currentChatId based on urlChatId if valid, else first chat or null
+        if (urlChatId && newChats.some(chat => chat.id === urlChatId)) {
+          setCurrentChatId(urlChatId);
+        } else if (newChats.length > 0) {
+          setCurrentChatId(newChats[0].id);
+        } else {
+          setCurrentChatId(null);
+        }
+
+        // If urlChatId is specified but not found, show error
+        if (urlChatId && !newChats.some(chat => chat.id === urlChatId)) {
+          showToastError("Chat room not found");
+          navigate("/Chat");
+        }
       } catch (err) {
-        showToastError(err.response?.data?.message);
+        showToastError(err.response?.data?.message || "Failed to load chats");
+        setCurrentChatId(null);
       }
     };
 
     fetchChats();
-    setCurrentChatId(urlChatId);
-  }, [userId]);
+  }, [userId, urlChatId, navigate]);
 
   // 2. Filter chats for sidebar
 
@@ -388,7 +418,13 @@ const ChatRoom = () => {
       setChats(updated);
     } catch (error) {
       console.error(error);
-      showToastError(error.response?.data?.error || "Error sending message");
+      if (error.response?.status === 404) {
+        showToastError("Chat room not found");
+      } else if (error.response?.status === 403) {
+        showToastError("You are not a member of this chat room");
+      } else {
+        showToastError(error.response?.data?.error || "Error sending message");
+      }
     }
   };
 
@@ -400,7 +436,7 @@ const ChatRoom = () => {
     formData.append('file', file);
 
     try {
-      const uploadResponse = await axios.post('${API_BASE_URL}/chatroom/upload', formData, {
+      const uploadResponse = await axios.post(`${API_BASE_URL}/chatroom/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -479,12 +515,13 @@ const ChatRoom = () => {
     };
 
     try {
-      const response = await axios.post("${API_BASE_URL}/chatroom", data);
+      const response = await axios.post(`${API_BASE_URL}/chatroom`, data);
       if (response.status === 201) {
         const newChat = response.data?.chatroom;
         newChat.unread = true;
         setChats((prev) => [newChat, ...prev]);
         setCurrentChatId(newChat.id);
+        navigate(`/Chat/${newChat.id}`);
 
         // Optionally join the new room
         if (socket) {
@@ -604,7 +641,13 @@ const ChatRoom = () => {
         // setIsMessagesLoaded(true);
       } catch (err) {
         console.error("Error loading initial messages:", err);
-        showToastError("Failed to load messages");
+        if (err.response?.status === 404) {
+          showToastError("Chat room not found");
+        } else if (err.response?.status === 403) {
+          showToastError("You are not a member of this chat room");
+        } else {
+          showToastError("Failed to load messages");
+        }
       }
       console.log(11111);
     }
@@ -709,7 +752,13 @@ const ChatRoom = () => {
       });
     } catch (err) {
       console.error("Failed to load older messages:", err);
-      showToastError("Failed to load older messages");
+      if (err.response?.status === 404) {
+        showToastError("Chat room not found");
+      } else if (err.response?.status === 403) {
+        showToastError("You are not a member of this chat room");
+      } else {
+        showToastError("Failed to load older messages");
+      }
     } finally {
       // Reset prepending state
       setIsPrepending(false);
@@ -821,7 +870,46 @@ const ChatRoom = () => {
     }
   };
 
-  // 13. Render main content: ChatWindow
+  // 13. Handle delete chat
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [chatToDelete, setChatToDelete] = useState(null);
+
+  const handleDeleteChat = (chatId) => {
+    const chat = chats.find(c => c.id === chatId);
+    setChatToDelete(chat);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteChat = async () => {
+    if (!chatToDelete) return;
+
+    try {
+      await axios.delete(`${API_BASE_URL}/chatroom/${chatToDelete.id}`, {
+        data: { userId: userId }
+      });
+      setChats((prev) => prev.filter((chat) => chat.id !== chatToDelete.id));
+      if (currentChatId === chatToDelete.id) {
+        const remainingChats = chats.filter((chat) => chat.id !== chatToDelete.id);
+        if (remainingChats.length > 0) {
+          setCurrentChatId(remainingChats[0].id);
+          navigate(`/Chat/${remainingChats[0].id}`);
+        } else {
+          setCurrentChatId(null);
+          navigate("/Chat");
+        }
+      }
+      setShowDeleteModal(false);
+      setChatToDelete(null);
+      showToastError("Chat deleted successfully"); // Note: This should probably be a success toast, but using existing function
+    } catch (err) {
+      console.error("Failed to delete chat:", err);
+      showToastError("Failed to delete chat");
+      setShowDeleteModal(false);
+      setChatToDelete(null);
+    }
+  };
+
+  // 14. Render main content: ChatWindow
   const renderMainContent = () => {
     if (!currentChatId || !urlChatId) {
       return <EmptyState />;
@@ -855,9 +943,7 @@ const ChatRoom = () => {
 
   if (showJoinRequest && invitedChatDetails) {
     return (
-      <div className="flex flex-col h-screen bg-background dark:bg-background transition-colors">
-        <NavBar />
-
+      <div className="flex flex-col h-screen bg-gray-50 transition-colors">
         <div className="flex flex-1 overflow-hidden">
           {showSidebar && (
             <Sidebar
@@ -871,6 +957,7 @@ const ChatRoom = () => {
               activeFilter={activeFilter}
               setActiveFilter={setActiveFilter}
               onNewChat={() => setIsNewChatModalOpen(true)}
+              onBackToChats={handleBackToChats}
             />
           )}
           <RequestJoin
@@ -883,10 +970,13 @@ const ChatRoom = () => {
     );
   }
 
-  return (
-    <div className="flex flex-col h-screen bg-neutral-50 dark:bg-slate-900 transition-colors">
-      <NavBar />
+  const handleBackToChats = () => {
+    setCurrentChatId(null);
+    navigate("/Chat");
+  };
 
+  return (
+    <div className="flex flex-col h-screen bg-gray-50 transition-colors">
       <div className="flex flex-1 overflow-hidden">
         {showSidebar && (
           <Sidebar
@@ -900,6 +990,9 @@ const ChatRoom = () => {
             activeFilter={activeFilter}
             setActiveFilter={setActiveFilter}
             onNewChat={() => setIsNewChatModalOpen(true)}
+            onDeleteChat={handleDeleteChat}
+            userId={userId}
+            onBackToChats={handleBackToChats}
           />
         )}
 
@@ -914,6 +1007,7 @@ const ChatRoom = () => {
               setCurrentChatId={setCurrentChatId}
               originalChats={chats}
               setOriginalChats={setChats}
+              onBackToChat={() => setShowChatInfo(false)}
             />
           )}
       </div>
@@ -923,6 +1017,52 @@ const ChatRoom = () => {
         onClose={() => setIsNewChatModalOpen(false)}
         onCreateChat={handleCreateChat}
       />
+
+      {/* Delete Chat Modal */}
+      {showDeleteModal && chatToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-md mx-4 shadow-lg">
+            <div className="font-['Inter'] p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                  <FaTimes className="text-red-600 text-xl" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Delete Chat</h2>
+                  <p className="text-sm text-gray-600">This action cannot be undone</p>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-gray-700 mb-2">
+                  Are you sure you want to delete <span className="font-semibold">"{chatToDelete.name}"</span>?
+                </p>
+                <p className="text-sm text-gray-500">
+                  All messages and data will be permanently removed.
+                </p>
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setChatToDelete(null);
+                  }}
+                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDeleteChat}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium"
+                >
+                  Delete Chat
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

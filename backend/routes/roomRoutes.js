@@ -7,6 +7,7 @@ const {
     handleMemberRequest,
     removeMember,
     leaveRoom,
+    deleteRoom,
     loadMessages,
     loadChatRooms,
     isAdmin,
@@ -47,6 +48,7 @@ router.put("/:chatId/changeAdmin/", changeAdmin)
 
 router.delete("/:chatId/members/:userId", removeMember);
 router.delete("/:chatId/leave/:userId", leaveRoom);
+router.delete("/:chatId", deleteRoom);
 
 router.post("/upload", upload.single('file'), uploadFile);
 

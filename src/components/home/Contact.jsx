@@ -97,7 +97,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <div className="font-bold text-neutral-900 dark:text-neutral-100 mb-1 text-lg">Email Us</div>
-                    <div className="text-neutral-600 dark:text-neutral-400">support@chatlas.com</div>
+                    <div className="text-neutral-600 dark:text-neutral-400">support@unifychat.com</div>
                   </div>
                 </div>
               </div>
