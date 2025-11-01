@@ -1,0 +1,50 @@
+edesign the entire chatroom interface (chat window, sidebar, info panel) to be modern, robust, and fully functional in both Light and Dark themes using the existing color palette. All features must be working: message loading, searching, deletion, storing, read/unread, typing indicators, file upload, lazy loading/pagination, and real-time updates via Socket.IO. Focus on accessibility, responsive layout (mobile-first), and smooth micro-interactions.
+
+Goals & High-level Requirements
+
+Create a sleek, minimal, and tactile UI that matches the project’s current color palette (use existing brand colors: dark greys #252525 / #424242 / #3C3C3C, whites #FFFFFF / #F2F2F2, yellows #F9ED32 / #FFF225) and supports both Light and Dark themes with theme persistence.
+
+All chat features must be fully functional and seamlessly integrated with backend APIs and Socket.IO events.
+
+Prioritize mobile-first responsive design, progressive enhancement, and accessibility (WCAG AA).
+
+Provide detailed acceptance criteria, component breakdown, and API/socket spec for easier implementation and testing.
+
+UX / UI Requirements
+Layout
+
+Left Sidebar: Room list with search, filter (unread, favorites), new room button, each room shows avatar, name, last message, unread badge, and timestamp. Collapsible on mobile.
+
+Main Chat Window:
+
+Header: room name, members count, admin action menu (edit room, leave, delete), theme toggle, search bar for conversation-level search.
+
+Messages area: scrollable container with date separators, continuous lazy loading (cursor-based) when scrolling up, show message reactions, translations (per-user), and read receipts.
+
+Composer: text input with attachments (image/file), speech-to-text button, emoji picker, send button. Support multiline input with Cmd/Ctrl+Enter to send.
+
+Right Info Panel: Room details, members list with role badges, pending join requests (admin view), pinned messages, shared files gallery. Collapsible on mobile.
+
+Floating Actions: New message button on mobile; quick actions for upload and GIF/emoji.
+
+Visual & Interaction
+
+Use subtle elevation (soft shadows) and rounded corners (rounded-2xl) for message cards.
+
+Messages from current user aligned right, others left. Different background/outline for translated messages.
+
+Smooth animations with small delays for: message arrival (fade + slide), attachment previews, typing indicator (animated dots).
+
+Buttons: primary (filled yellow), secondary (outline), ghost (transparent). Ensure strong contrast in both themes.
+
+Loading states: skeleton loaders for rooms and messages, spinner for network actions.
+
+Confirmation modals for destructive actions (delete message/leave room), with undo snackbar for message deletion (5s undo).
+
+Accessibility
+
+Keyboard navigation (tab order) and aria labels for all interactive elements.
+
+High-contrast focus styles.
+
+Screen-reader friendly announcements for incoming messages and room changes.

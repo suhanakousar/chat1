@@ -7,6 +7,41 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        brand: {
+          yellow: {
+            DEFAULT: '#F9ED32',
+            light: '#FFF225',
+            50: '#FFFEF5',
+            100: '#FFFCE6',
+            200: '#FFF9C2',
+            300: '#FFF69D',
+            400: '#FFF225',
+            500: '#F9ED32',
+            600: '#E6D91F',
+            700: '#C7B717',
+            800: '#A89610',
+            900: '#7A6B0B',
+          },
+          grey: {
+            dark: '#252525',
+            medium: '#3C3C3C',
+            light: '#424242',
+            50: '#F2F2F2',
+            100: '#E8E8E8',
+            200: '#D9D9D9',
+            300: '#BABABA',
+            400: '#9B9B9B',
+            500: '#7C7C7C',
+            600: '#5D5D5D',
+            700: '#424242',
+            800: '#3C3C3C',
+            900: '#252525',
+          },
+          white: {
+            DEFAULT: '#FFFFFF',
+            soft: '#F2F2F2',
+          },
+        },
         primary: {
           50: "#EEF2FF",
           100: "#E0E7FF",

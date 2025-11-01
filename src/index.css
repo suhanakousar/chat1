@@ -8,25 +8,34 @@
 
 @layer base {
   :root {
-    /* Light Mode Colors */
-    --primary: #6366F1;
-    --primary-hover: #4F46E5;
-    --primary-light: #818CF8;
-    --primary-bg: #EEF2FF;
-    --secondary: #8B5CF6;
-    --accent: #EC4899;
+    /* Light Mode Colors - Brand Palette */
+    --brand-yellow: #F9ED32;
+    --brand-yellow-light: #FFF225;
+    --brand-grey-dark: #252525;
+    --brand-grey-medium: #3C3C3C;
+    --brand-grey-light: #424242;
+    --brand-white: #FFFFFF;
+    --brand-white-soft: #F2F2F2;
+    
+    /* Semantic Colors - Light Mode */
+    --primary: #F9ED32;
+    --primary-hover: #E6D91F;
+    --primary-light: #FFF225;
+    --primary-bg: #FFFEF5;
+    --secondary: #424242;
+    --accent: #F9ED32;
     --success: #10B981;
     --warning: #F59E0B;
     --error: #EF4444;
     --info: #3B82F6;
-    --background: #F9FAFB;
-    --surface: #FFFFFF;
+    --background: #FFFFFF;
+    --surface: #F2F2F2;
     --surface-elevated: #FFFFFF;
-    --text-primary: #111827;
-    --text-secondary: #6B7280;
-    --text-tertiary: #9CA3AF;
-    --border: #E5E7EB;
-    --border-hover: #D1D5DB;
+    --text-primary: #252525;
+    --text-secondary: #424242;
+    --text-tertiary: #7C7C7C;
+    --border: #E8E8E8;
+    --border-hover: #D9D9D9;
     
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -47,25 +56,34 @@
   }
   
   .dark {
-    /* Dark Mode Colors - Enhanced for Chat UI */
-    --primary: #818CF8;
-    --primary-hover: #6366F1;
-    --primary-light: #4F46E5;
-    --primary-bg: #1E1B4B;
-    --secondary: #A78BFA;
-    --accent: #F472B6;
+    /* Dark Mode Colors - Brand Palette */
+    --brand-yellow: #F9ED32;
+    --brand-yellow-light: #FFF225;
+    --brand-grey-dark: #252525;
+    --brand-grey-medium: #3C3C3C;
+    --brand-grey-light: #424242;
+    --brand-white: #FFFFFF;
+    --brand-white-soft: #F2F2F2;
+    
+    /* Semantic Colors - Dark Mode */
+    --primary: #FFF225;
+    --primary-hover: #F9ED32;
+    --primary-light: #FFF225;
+    --primary-bg: #3C3C3C;
+    --secondary: #F2F2F2;
+    --accent: #FFF225;
     --success: #34D399;
     --warning: #FBBF24;
     --error: #F87171;
     --info: #60A5FA;
-    --background: #0F172A; /* Current dark background */
-    --surface: #1E293B;   /* Slightly lighter for UI elements */
-    --surface-elevated: #334155; /* For elevated elements like cards */
-    --text-primary: #F1F5F9; /* Very light gray for main text */
-    --text-secondary: #CBD5E1; /* Light gray for secondary text */
-    --text-tertiary: #94A3B8; /* Medium gray for tertiary text */
-    --border: #334155; /* Border color matching surface-elevated */
-    --border-hover: #475569;
+    --background: #252525;
+    --surface: #3C3C3C;
+    --surface-elevated: #424242;
+    --text-primary: #FFFFFF;
+    --text-secondary: #F2F2F2;
+    --text-tertiary: #D9D9D9;
+    --border: #424242;
+    --border-hover: #5D5D5D;
     
     /* Dark Mode Shadows */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
@@ -108,68 +126,137 @@
 }
 
 @layer components {
-  .glass {
-    @apply bg-white/95 backdrop-blur-lg border border-neutral-200/50 shadow-sm;
+  /* Chat-specific components using brand colors */
+  .chat-surface {
+    background-color: var(--surface);
+    border-color: var(--border);
+    @apply transition-smooth;
   }
   
-  .glass-dark {
-    @apply bg-neutral-900/95 backdrop-blur-lg border border-neutral-700/50 shadow-lg;
+  .chat-surface-elevated {
+    background-color: var(--surface-elevated);
+    border-color: var(--border);
+    @apply shadow-soft transition-smooth;
+  }
+  
+  .glass {
+    @apply bg-white/95 dark:bg-brand-grey-dark/95 backdrop-blur-lg border border-neutral-200/50 dark:border-brand-grey-light/50 shadow-sm;
   }
   
   .glass-frosted {
-    @apply bg-white/90 backdrop-blur-md border border-neutral-200/60;
+    @apply bg-white/90 dark:bg-brand-grey-medium/90 backdrop-blur-md border border-neutral-200/60 dark:border-brand-grey-light/60;
   }
   
-  .gradient-primary {
-    @apply bg-gradient-to-r from-primary-500 to-primary-600;
-  }
-  
-  .gradient-accent {
-    @apply bg-gradient-to-r from-accent-500 to-accent-600;
-  }
-  
-  .gradient-mesh {
-    background: 
-      radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(217, 70, 239, 0.05) 0px, transparent 50%);
-  }
-  
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600;
-  }
-  
+  /* Brand button variants */
   .btn-primary {
-    @apply px-6 py-3 bg-primary-600 text-white rounded-xl font-semibold
-           hover:bg-primary-700 active:scale-[0.98]
-           transition-all duration-200 shadow-sm hover:shadow-md;
+    @apply px-6 py-3 bg-brand-yellow text-brand-grey-dark rounded-2xl font-semibold font-['Montserrat']
+           hover:bg-brand-yellow-light active:scale-[0.98]
+           transition-all duration-200 shadow-soft hover:shadow-medium
+           dark:bg-brand-yellow-light dark:text-brand-grey-dark dark:hover:bg-brand-yellow
+           focus:outline-none focus:ring-2 focus:ring-brand-yellow/50 focus:ring-offset-2;
   }
   
   .btn-secondary {
-    @apply px-6 py-3 bg-white text-neutral-900 rounded-xl font-semibold border border-neutral-200
-           hover:bg-neutral-50 active:scale-[0.98]
-           transition-all duration-200 shadow-sm;
+    @apply px-6 py-3 bg-transparent text-brand-grey-dark dark:text-brand-white rounded-2xl font-semibold font-['Montserrat']
+           border-2 border-brand-grey-light dark:border-brand-white-soft
+           hover:bg-brand-grey-50 dark:hover:bg-brand-grey-light active:scale-[0.98]
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-brand-grey-light/50 focus:ring-offset-2;
   }
   
   .btn-ghost {
-    @apply px-6 py-3 bg-transparent text-neutral-700 rounded-xl font-semibold
-           hover:bg-neutral-100 active:scale-[0.98]
+    @apply px-6 py-3 bg-transparent text-brand-grey-dark dark:text-brand-white rounded-2xl font-semibold font-['Montserrat']
+           hover:bg-brand-grey-50 dark:hover:bg-brand-grey-light active:scale-[0.98]
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-brand-grey-200/50;
+  }
+  
+  .btn-icon {
+    @apply p-3 rounded-full bg-transparent hover:bg-brand-grey-100 dark:hover:bg-brand-grey-light
+           transition-all duration-200 active:scale-95
+           focus:outline-none focus:ring-2 focus:ring-brand-yellow/50;
+  }
+  
+  /* Input variants */
+  .input-modern {
+    @apply w-full px-4 py-3 bg-brand-white dark:bg-brand-grey-medium
+           border-2 border-brand-grey-200 dark:border-brand-grey-light rounded-2xl
+           text-brand-grey-dark dark:text-brand-white font-['Inter']
+           focus:ring-2 focus:ring-brand-yellow/50 focus:border-brand-yellow
+           transition-all duration-200 placeholder:text-brand-grey-500
+           hover:border-brand-grey-300 dark:hover:border-brand-grey-600;
+  }
+  
+  .input-search {
+    @apply bg-brand-grey-50 dark:bg-brand-grey-light rounded-full px-4 py-3
+           border-none text-brand-grey-dark dark:text-brand-white font-['Inter']
+           placeholder:text-brand-grey-500 dark:placeholder:text-brand-grey-300
+           focus:outline-none focus:ring-2 focus:ring-brand-yellow/30
            transition-all duration-200;
   }
   
-  .input-modern {
-    @apply w-full px-4 py-3 bg-white border border-neutral-300 rounded-xl
-           focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500
-           transition-all duration-200 placeholder:text-neutral-400
-           hover:border-neutral-400;
+  /* Message bubbles */
+  .message-bubble-sent {
+    @apply bg-brand-yellow text-brand-grey-dark rounded-2xl rounded-br-sm p-3 max-w-md
+           shadow-sm break-words font-['Inter'];
   }
   
+  .message-bubble-received {
+    @apply bg-brand-white dark:bg-brand-grey-light text-brand-grey-dark dark:text-brand-white
+           rounded-2xl rounded-bl-sm p-3 max-w-md shadow-sm break-words font-['Inter'];
+  }
+  
+  /* Card variants */
   .card-modern {
-    @apply bg-white rounded-2xl p-6 shadow-sm hover:shadow-md
-           transition-all duration-200 border border-neutral-100;
+    @apply bg-brand-white dark:bg-brand-grey-medium rounded-2xl p-6
+           shadow-soft hover:shadow-medium transition-all duration-200
+           border border-brand-grey-100 dark:border-brand-grey-light;
   }
   
+  .card-chat-item {
+    @apply px-4 py-3 hover:bg-brand-grey-50 dark:hover:bg-brand-grey-light
+           cursor-pointer transition-all duration-200 rounded-xl
+           border-l-4 border-transparent;
+  }
+  
+  .card-chat-item-active {
+    @apply bg-brand-yellow/10 dark:bg-brand-yellow/5 border-l-brand-yellow;
+  }
+  
+  /* Badge variants */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold font-['Inter'];
+  }
+  
+  .badge-unread {
+    @apply bg-brand-yellow text-brand-grey-dark;
+  }
+  
+  .badge-admin {
+    @apply bg-brand-grey-dark dark:bg-brand-white text-brand-white dark:text-brand-grey-dark;
+  }
+  
+  /* Utility classes */
   .section-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-hover) transparent;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background-color: var(--border-hover);
+    border-radius: 20px;
   }
 }
 

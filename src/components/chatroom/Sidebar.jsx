@@ -1,29 +1,104 @@
-import { AvatarChat, AvatarPerson } from "./ReusableComponents.jsx";
-import { TabButton } from "./ReusableComponents.jsx";
-import { IconButton } from "./ReusableComponents.jsx";
-import { FaSearch, FaCommentDots } from "react-icons/fa";
-import { useEffect } from "react";
+import React from "react";
+import { AvatarChat } from "./ReusableComponents.jsx";
+import { IconButton, Input, Badge } from "../ui/ThemeAwareComponents";
+import { FaSearch, FaCommentDots, FaTimes } from "react-icons/fa";
 
 const showTime = (timestamp) => {
+  if (!timestamp) return "";
   const sentTime = new Date(timestamp);
   const now = new Date();
   const diffInSeconds = Math.floor((now - sentTime) / 1000);
 
-  if (diffInSeconds < 60) return "now"; // Less than 1 minute
+  if (diffInSeconds < 60) return "now";
   const diffInMinutes = Math.floor(diffInSeconds / 60);
-  if (diffInMinutes < 60) return `${diffInMinutes}m`; // Less than 1 hour
+  if (diffInMinutes < 60) return `${diffInMinutes}m`;
   const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) return `${diffInHours}h`; // Less than 1 day
+  if (diffInHours < 24) return `${diffInHours}h`;
   const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 30) return `${diffInDays}d`; // Less than 1 month
+  if (diffInDays < 30) return `${diffInDays}d`;
   const diffInMonths = Math.floor(diffInDays / 30);
-  if (diffInMonths < 12) return `${diffInMonths}m`; // Less than 1 year
+  if (diffInMonths < 12) return `${diffInMonths}mo`;
   const diffInYears = Math.floor(diffInMonths / 12);
-  return `${diffInYears} y`; // More than 1 year
+  return `${diffInYears}y`;
+};
+
+const FilterTab = ({ text, isActive, onClick, count = 0 }) => {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        px-4 py-2 rounded-full text-sm font-semibold font-['Montserrat'] transition-all duration-200
+        ${isActive 
+          ? 'bg-brand-yellow text-brand-grey-dark shadow-sm' 
+          : 'bg-transparent text-brand-grey-600 dark:text-brand-grey-300 hover:bg-brand-grey-100 dark:hover:bg-brand-grey-light'
+        }
+        focus:outline-none focus:ring-2 focus:ring-brand-yellow/50
+      `}
+      aria-pressed={isActive}
+      aria-label={`Filter by ${text}${count > 0 ? `, ${count} items` : ''}`}
+    >
+      {text}
+      {count > 0 && <span className="ml-1.5 opacity-75">({count})</span>}
+    </button>
+  );
+};
+
+const ChatItem = ({ chat, isActive, onClick }) => {
+  const unreadCount = chat.unread_count || 0;
+  
+  return (
+    <div
+      onClick={onClick}
+      className={`
+        card-chat-item group relative
+        ${isActive ? 'card-chat-item-active' : ''}
+      `}
+      role="button"
+      tabIndex={0}
+      aria-label={`Chat with ${chat.name}, ${unreadCount > 0 ? `${unreadCount} unread messages` : 'no unread messages'}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+    >
+      <div className="flex items-center gap-3">
+        <div className="relative flex-shrink-0">
+          <AvatarChat color={chat.avatar_color} text={chat.avatar_text} />
+          {chat.is_online && (
+            <div className="absolute bottom-0 right-0 h-3 w-3 bg-success rounded-full border-2 border-brand-white dark:border-brand-grey-medium"></div>
+          )}
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <h3 className="font-['Montserrat'] font-semibold text-brand-grey-dark dark:text-brand-white truncate">
+              {chat.name}
+            </h3>
+            <span className="font-['Inter'] text-xs text-brand-grey-500 dark:text-brand-grey-400 flex-shrink-0">
+              {showTime(chat.updated_at)}
+            </span>
+          </div>
+          
+          <div className="flex items-center justify-between gap-2">
+            <p className={`font-['Inter'] text-sm truncate flex-1 ${unreadCount > 0 ? 'font-medium text-brand-grey-dark dark:text-brand-white' : 'text-brand-grey-600 dark:text-brand-grey-400'}`}>
+              {chat.last_message || "No messages yet"}
+            </p>
+            {unreadCount > 0 && (
+              <Badge variant="unread" className="flex-shrink-0">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </Badge>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const Sidebar = ({
-  chats,
+  chats = [],
   currentChatId,
   onChatClick,
   searchTerm,
@@ -31,88 +106,124 @@ const Sidebar = ({
   activeFilter,
   setActiveFilter,
   onNewChat,
+  isCollapsed = false,
+  onToggleCollapse,
 }) => {
-  
+  const filterCounts = React.useMemo(() => {
+    return {
+      all: chats.length,
+      unread: chats.filter(chat => (chat.unread_count || 0) > 0).length,
+      pending: chats.filter(chat => chat.status === 'pending').length,
+    };
+  }, [chats]);
+
   return (
-    <div
-      className={`xl:pt-18 lg:pt-16 md:pt-12 sm:pt-8 pt-6 mt-10 lg:mt-2 w-80 border-r bg-white flex flex-col`}
+    <aside
+      className={`
+        flex flex-col h-full border-r border-brand-grey-200 dark:border-brand-grey-light
+        bg-brand-white-soft dark:bg-brand-grey-medium transition-all duration-300
+        ${isCollapsed ? 'w-0 overflow-hidden' : 'w-80 lg:w-96'}
+      `}
+      aria-label="Chat list sidebar"
     >
       {/* Sidebar Header */}
-      <div className="p-4 border-b flex justify-between items-center">
-        <h1 className="text-[#081C48] font-['Montserrat'] text-[1.75rem] font-bold">
-          Chats
-        </h1>
-        <IconButton icon={<FaCommentDots />} onClick={onNewChat} />
-      </div>
-
-      {/* Search Bar */}
-      <div className="p-4">
-        <div className="bg-[#E8E8E8] rounded-full p-2 flex items-center">
-          <FaSearch className="text-[#65686C] mx-2" />
-          <input
-            type="text"
-            placeholder="Search"
-            className="font-['Inter'] bg-transparent outline-none w-full placeholder-[#65686C]"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+      <div className="px-6 py-4 border-b border-brand-grey-200 dark:border-brand-grey-light flex-shrink-0">
+        <div className="flex justify-between items-center">
+          <h1 className="text-brand-grey-dark dark:text-brand-white font-['Montserrat'] text-2xl font-bold">
+            Chats
+          </h1>
+          <IconButton 
+            icon={<FaCommentDots className="text-xl" />} 
+            onClick={onNewChat}
+            ariaLabel="Start new chat"
           />
         </div>
       </div>
 
+      {/* Search Bar */}
+      <div className="px-4 py-3 flex-shrink-0">
+        <div className="relative">
+          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-grey-500 dark:text-brand-grey-400 z-10" />
+          <Input
+            type="text"
+            placeholder="Search chats..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            variant="search"
+            className="pl-11 pr-10"
+            aria-label="Search chats"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-brand-grey-200 dark:hover:bg-brand-grey-600 rounded-full transition-colors"
+              aria-label="Clear search"
+            >
+              <FaTimes className="text-brand-grey-500 dark:text-brand-grey-400 text-sm" />
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Filter Tabs */}
-      <div className="flex px-4 gap-2 mb-2">
-        <TabButton
+      <div className="px-4 pb-3 flex gap-2 flex-shrink-0 overflow-x-auto scrollbar-custom">
+        <FilterTab
           text="All"
           isActive={activeFilter === "all"}
           onClick={() => setActiveFilter("all")}
+          count={filterCounts.all}
         />
-        <TabButton
+        <FilterTab
           text="Unread"
           isActive={activeFilter === "unread"}
           onClick={() => setActiveFilter("unread")}
+          count={filterCounts.unread}
         />
-        <TabButton
+        <FilterTab
           text="Pending"
           isActive={activeFilter === "pending"}
           onClick={() => setActiveFilter("pending")}
+          count={filterCounts.pending}
         />
       </div>
 
       {/* Chat List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto scrollbar-custom">
         {chats.length === 0 ? (
-          <div className="p-4 text-center text-gray-500">No chats found</div>
+          <div className="flex flex-col items-center justify-center h-full px-6 text-center">
+            <div className="text-6xl mb-4">💬</div>
+            <h3 className="font-['Montserrat'] font-semibold text-brand-grey-dark dark:text-brand-white mb-2">
+              {searchTerm ? 'No chats found' : 'No chats yet'}
+            </h3>
+            <p className="font-['Inter'] text-sm text-brand-grey-600 dark:text-brand-grey-400 mb-4">
+              {searchTerm 
+                ? 'Try searching with different keywords' 
+                : 'Start a new conversation to get started'
+              }
+            </p>
+            {!searchTerm && (
+              <button
+                onClick={onNewChat}
+                className="btn-primary text-sm"
+              >
+                Start New Chat
+              </button>
+            )}
+          </div>
         ) : (
-          chats.map((chat) => (
-            <div
-              key={chat.id}
-              className={`py-2 px-4 border-b hover:bg-gray-100 flex items-center cursor-pointer ${
-                chat.id === currentChatId ? "bg-gray-100" : ""
-              }`}
-              onClick={() => onChatClick(chat.id)}
-            >
-              <AvatarChat color={chat.avatar_color} text={chat.avatar_text} />
-              <div className="ml-3">
-                <div className="flex justify-between">
-                  <span className="font-['Montserrat'] font-semibold">
-                    {chat.name}
-                  </span>
-                  <span className="font-['Inter'] text-[#989898] text-xs">
-                    {showTime(chat.updated_at)}
-                  </span>
-                </div>
-                <p className="font-['Inter'] text-[#65686C] text-sm truncate w-[220px] overflow-hidden">
-                  {chat.last_message}
-                </p>
-              </div>
-              {chat.unread && (
-                <div className="bg-red-500 rounded-full h-2 w-2"></div>
-              )}
-            </div>
-          ))
+          <div className="space-y-1 px-2 py-2">
+            {chats.map((chat) => (
+              <ChatItem
+                key={chat.id}
+                chat={chat}
+                isActive={chat.id === currentChatId}
+                onClick={() => onChatClick(chat.id)}
+              />
+            ))}
+          </div>
         )}
       </div>
-    </div>
+    </aside>
   );
 };
 
