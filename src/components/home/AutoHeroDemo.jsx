@@ -125,15 +125,15 @@ const AutoPhraseCloud = ({ phrases = defaultPhrases, autoInterval = 2400, playAu
       <div 
         className="relative bg-gray-900/60 backdrop-blur-sm rounded-xl p-6 shadow-lg transition-all duration-500 transform-gpu"
         style={{
-          borderLeft: "3px solid #FFD93D",
-          borderRight: "3px solid #00D4FF",
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2), 0 0 8px rgba(255, 217, 61, 0.2), 0 0 8px rgba(0, 212, 255, 0.2)"
+          borderLeft: "3px solid #6366F1",
+          borderRight: "3px solid #8B5CF6",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2), 0 0 8px rgba(99, 102, 241, 0.3), 0 0 8px rgba(139, 92, 246, 0.3)"
         }}
       >
         <div className="flex flex-col space-y-4 animate-fadeSlide">
           {/* Source phrase */}
           <div className="flex items-start">
-            <div className="bg-gray-800 text-xs font-bold px-2 py-1 rounded mr-2 text-cyan-300">
+            <div className="bg-gray-800 text-xs font-bold px-2 py-1 rounded mr-2 text-primary-300">
               {currentPhrase.lang}
             </div>
             <p className="text-white text-lg font-medium">{currentPhrase.text}</p>
@@ -141,16 +141,16 @@ const AutoPhraseCloud = ({ phrases = defaultPhrases, autoInterval = 2400, playAu
           
           {/* Translation with arrow indicator */}
           <div className="pl-6 relative">
-            <div className="absolute left-0 top-2 h-6 w-4 text-yellow-300">
+            <div className="absolute left-0 top-2 h-6 w-4 text-primary-300">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z" clipRule="evenodd" />
               </svg>
             </div>
             <div className="flex items-start">
-              <div className="bg-yellow-500 text-xs font-bold px-2 py-1 rounded mr-2 text-gray-900">
+              <div className="bg-primary-600 text-xs font-bold px-2 py-1 rounded mr-2 text-white">
                 {currentPhrase.tLang}
               </div>
-              <p className="text-yellow-300 text-lg font-medium" dir={currentPhrase.tLang === "AR" ? "rtl" : "ltr"}>
+              <p className="text-primary-300 text-lg font-medium" dir={currentPhrase.tLang === "AR" ? "rtl" : "ltr"}>
                 {currentPhrase.translation}
               </p>
             </div>
@@ -160,7 +160,7 @@ const AutoPhraseCloud = ({ phrases = defaultPhrases, autoInterval = 2400, playAu
         {/* Audio status indicator (subtle) */}
         {playAudio && (
           <div className="absolute bottom-2 right-2 flex items-center">
-            <div className={`w-2 h-2 rounded-full mr-1 ${isAudioAllowed ? 'bg-cyan-400' : 'bg-gray-500'}`}></div>
+            <div className={`w-2 h-2 rounded-full mr-1 ${isAudioAllowed ? 'bg-primary-400' : 'bg-gray-500'}`}></div>
             <span className="text-xs text-gray-400">audio</span>
           </div>
         )}
@@ -169,7 +169,7 @@ const AutoPhraseCloud = ({ phrases = defaultPhrases, autoInterval = 2400, playAu
       {/* Demo CTA */}
       <div className="mt-4 text-center">
         <button 
-          className="inline-flex items-center px-4 py-2 rounded-full bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-medium transition-colors"
+          className="inline-flex items-center px-4 py-2 rounded-full bg-primary-600 hover:bg-primary-700 text-white font-medium transition-colors shadow-md hover:shadow-lg"
           onClick={() => setIndex((index + 1) % phrases.length)}
         >
           <span>Watch Demo</span>
@@ -206,8 +206,8 @@ const AutoHeroDemo = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 opacity-90"></div>
       
       {/* Accent color blobs (positioned absolutely) */}
-      <div className="absolute top-0 left-1/4 w-64 h-64 bg-yellow-400/10 rounded-full filter blur-3xl"></div>
-      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-500/10 rounded-full filter blur-3xl"></div>
+      <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary-500/10 rounded-full filter blur-3xl"></div>
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-accent-500/10 rounded-full filter blur-3xl"></div>
       
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center mb-12">
@@ -217,7 +217,7 @@ const AutoHeroDemo = () => {
           </h1>
           
           {/* Main tagline */}
-          <h2 className="text-2xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-yellow-300 to-cyan-400 bg-clip-text text-transparent">
+          <h2 className="text-2xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
             Break Language Barriers — Connect Globally with AI
           </h2>
           
@@ -233,13 +233,13 @@ const AutoHeroDemo = () => {
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <a 
               href="#get-started" 
-              className="px-8 py-3 rounded-lg bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold text-lg transition-colors shadow-lg hover:shadow-xl"
+              className="px-8 py-3 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-bold text-lg transition-colors shadow-lg hover:shadow-xl"
             >
               Get Started Free
             </a>
             <a 
               href="#learn-more" 
-              className="px-8 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-bold text-lg transition-colors border border-cyan-400/30 hover:border-cyan-400/60"
+              className="px-8 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 text-white font-bold text-lg transition-colors border border-primary-400/30 hover:border-primary-400/60"
             >
               Learn More
             </a>
