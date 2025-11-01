@@ -45,8 +45,19 @@ export const AuthProvider = ({ children }) => {
     delete axios.defaults.headers.common["Authorization"];
   };
 
+  const updateUser = async (userData) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/auth/update`, userData);
+      setUser(response.data.data.user);
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to update user", error);
+      return { success: false, error: error.message };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, error }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, loading, error }}>
       {children}
     </AuthContext.Provider>
   );

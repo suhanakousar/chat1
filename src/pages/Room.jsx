@@ -1,7 +1,7 @@
 // Room.jsx
 import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/chatroom/Sidebar.jsx";
-import ChatWindow from "../components/chatroom/ChatWindow.jsx";
+import ChatWindow from "../components/chatroom/EnhancedChatWindow.jsx";
 import ChatInfo from "../components/chatroom/ChatInfo.jsx";
 import NavBar from "../components/NavBar.jsx";
 import { FaTimes } from "react-icons/fa";
@@ -26,7 +26,7 @@ const ChatRoom = () => {
             Select a conversation or start a new one
           </p>
           <button
-            className="bg-yellow-300 hover:bg-yellow-400 px-4 py-2 rounded-full font-medium transition"
+            className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-full font-medium transition shadow-md"
             onClick={() => setIsNewChatModalOpen(true)}
           >
             Start New Chat
@@ -78,7 +78,7 @@ const ChatRoom = () => {
                 type="text"
                 value={chatName}
                 onChange={(e) => setChatName(e.target.value)}
-                className="placeholder-[#65686C] shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                className="placeholder-[#65686C] shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="Enter chat name"
                 required
               />
@@ -91,7 +91,7 @@ const ChatRoom = () => {
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="placeholder-[#65686C] shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                className="placeholder-[#65686C] shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="Enter a description (optional)"
               />
             </div>
@@ -106,7 +106,7 @@ const ChatRoom = () => {
               </button>
               <button
                 type="submit"
-                className="font-['Montserrat'] font-semibold bg-yellow-400 hover:bg-yellow-300 px-4 py-2 rounded-lg"
+                className="font-['Montserrat'] font-semibold bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg shadow-md"
               >
                 Create Chat
               </button>

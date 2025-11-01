@@ -3,6 +3,7 @@ import { useAuth } from '../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaCamera, FaLinkedin, FaGithub, FaTwitter, FaGlobe, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'react-toastify';
 
 const Profile = () => {
   const { user, updateUser } = useAuth();
@@ -86,8 +87,30 @@ const Profile = () => {
     }
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
+  const handleSave = async () => {
+    const updatedData = {
+      given_name: profileData.displayName,
+      bio: profileData.bio,
+      status: profileData.status,
+      linkedin: profileData.linkedin,
+      github: profileData.github,
+      twitter: profileData.twitter,
+      website: profileData.website,
+      profile_picture: profileImage,
+    };
+    
+    if (updateUser) {
+      const result = await updateUser(updatedData);
+      if (result.success) {
+        setIsEditing(false);
+        setImagePreview(null);
+        toast.success('Profile updated successfully!');
+      } else {
+        toast.error('Failed to save profile changes. Please try again.');
+      }
+    } else {
+      setIsEditing(false);
+    }
   };
 
   const handleCancel = () => {
