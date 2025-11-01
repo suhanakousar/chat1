@@ -1,198 +1,140 @@
 import React, { forwardRef } from "react";
-import { earth, serviceOne, translateIcon } from "../../assets";
-import { useNavigate } from "react-router-dom";
-import { FaGlobe, FaComments, FaLanguage, FaArrowRight, FaExternalLinkAlt } from "react-icons/fa";
+import { FaGlobe, FaComments, FaLanguage, FaBolt, FaCheckCircle } from "react-icons/fa";
 
 const Service = forwardRef((props, ref) => {
-  const navigate = useNavigate();
-
   const services = [
     {
       id: "translate",
-      icon: <FaLanguage className="text-3xl text-primary-600" />,
-      title: "Instantly Connect Across Languages",
-      description: "Supports over 140 languages for effortless chatting",
-      buttonText: "Supported Languages",
-      image: serviceOne,
-      link: "https://learn.microsoft.com/en-us/azure/ai-services/translator/language-support",
-      external: true,
-      featured: true,
+      icon: FaLanguage,
+      title: "140+ Languages",
+      subtitle: "Instant Translation",
+      description: "Break down language barriers with support for over 140 languages. Chat naturally while our AI handles the translation in real-time.",
+      features: ["Real-time translation", "Context-aware", "Native accuracy"],
+      gradient: "from-indigo-500 via-purple-500 to-pink-500",
+      iconBg: "bg-indigo-500",
     },
     {
-      id: "communicate",
-      icon: <FaComments className="text-3xl text-accent-600" />,
-      title: "Real-Time Translations",
-      description: "Chat without language barriers, anytime, anywhere",
-      buttonText: "Start Chatting",
-      iconImage: translateIcon,
-      link: "/Chat",
-      external: false,
+      id: "realtime",
+      icon: FaBolt,
+      title: "Lightning Fast",
+      subtitle: "Real-Time Speed",
+      description: "Experience conversations without delays. Our Azure-powered infrastructure ensures messages translate in milliseconds, not seconds.",
+      features: ["&lt; 100ms latency", "WebSocket powered", "Always reliable"],
+      gradient: "from-cyan-500 via-blue-500 to-indigo-500",
+      iconBg: "bg-cyan-500",
     },
     {
-      id: "engage",
-      icon: <FaGlobe className="text-3xl text-success" />,
-      title: "Multiple Language Support",
-      description: "Choose your preferred language and start chatting",
-      buttonText: "Language Preference",
-      iconImage: earth,
-      link: "https://learn.microsoft.com/en-us/azure/ai-services/translator/language-support",
-      external: true,
+      id: "global",
+      icon: FaGlobe,
+      title: "Global Reach",
+      subtitle: "Connect Worldwide",
+      description: "Join chat rooms with people from around the world. Everyone sees messages in their own language automatically.",
+      features: ["Auto-detection", "Smart routing", "Secure encryption"],
+      gradient: "from-pink-500 via-rose-500 to-red-500",
+      iconBg: "bg-pink-500",
     },
   ];
 
-  const handleNavigation = (service) => {
-    if (service.external) {
-      window.open(service.link, '_blank');
-    } else {
-      navigate(service.link);
-    }
-  };
-
   return (
-    <div ref={ref} id="services" className="relative py-32 bg-gradient-to-b from-neutral-50 to-white overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute top-20 left-0 w-96 h-96 bg-accent-500/5 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 right-0 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl"></div>
+    <div ref={ref} id="services" className="relative py-20 bg-neutral-50 dark:bg-slate-900 transition-colors overflow-hidden">
+      {/* Animated Background Gradients */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary-500/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-accent-500/20 dark:bg-accent-500/10 rounded-full blur-3xl animate-float-delayed"></div>
+      </div>
 
       <div className="section-container relative z-10">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-20 space-y-6">
-          <div className="inline-flex items-center space-x-2 px-5 py-2 glass rounded-full border border-accent-200">
-            <div className="w-2 h-2 bg-accent-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent-500 to-primary-500">Our Services</span>
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-16 space-y-6">
+          <div className="inline-flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-full border border-primary-200 dark:border-primary-800 shadow-sm">
+            <div className="w-2 h-2 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse"></div>
+            <span className="text-sm font-semibold bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 bg-clip-text text-transparent">Our Services</span>
           </div>
           
-          <h2 className="text-5xl md:text-6xl font-display font-bold text-neutral-900 leading-[1.1]">
+          <h2 className="text-4xl md:text-5xl font-bold text-neutral-900 dark:text-neutral-100 leading-tight">
             Everything you need to
             <br />
-            <span className="text-gradient">communicate globally</span>
+            <span className="bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 bg-clip-text text-transparent">
+              communicate globally
+            </span>
           </h2>
           
-          <div className="flex justify-center">
-            <div className="h-1 w-32 bg-gradient-to-r from-accent-500 via-primary-500 to-aurora-500 rounded-full"></div>
-          </div>
+          <p className="text-lg text-neutral-600 dark:text-neutral-300">
+            Powerful AI-driven services designed for seamless cross-language communication
+          </p>
         </div>
 
-        {/* Staggered Timeline Services */}
-        <div className="relative space-y-12">
-          {/* Vertical connector line */}
-          <div className="absolute left-0 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-500 via-accent-500 to-aurora-500 transform md:-translate-x-px hidden md:block"></div>
-
+        {/* Services Grid - Unique Bento Box Layout */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, index) => (
             <div
               key={service.id}
-              className={`relative ${
-                index === 0 ? 'md:mr-auto md:pr-12 md:w-1/2' : 
-                index === 1 ? 'md:ml-auto md:pl-12 md:w-1/2' : 
-                'md:mr-auto md:pr-12 md:w-1/2'
-              }`}
+              className="group relative"
             >
-              {/* Timeline dot */}
-              <div className={`absolute hidden md:block top-8 ${
-                index === 1 ? '-left-3' : '-right-3'
-              } w-6 h-6 rounded-full bg-gradient-to-br ${
-                index === 0 ? 'from-primary-500 to-primary-600 shadow-glow' :
-                index === 1 ? 'from-accent-500 to-accent-600 shadow-glow-accent' :
-                'from-aurora-500 to-aurora-600 shadow-glow-aurora'
-              } border-4 border-white z-10`}></div>
-
-              {/* Service Card */}
-              <div className="group relative">
-                {service.featured ? (
-                  <div className="relative bg-white rounded-3xl border-2 border-primary-500/30 hover:border-primary-500/60 overflow-hidden shadow-soft hover:shadow-depth transition-all duration-500 hover:scale-[1.02]">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-accent-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    <div className="flex flex-col md:flex-row">
-                      <div className="flex-1 p-8 md:p-10 space-y-6 relative z-10">
-                        <div className="flex items-center justify-between">
-                          <div className="p-4 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl shadow-glow">
-                            <FaLanguage className="text-white text-3xl" />
-                          </div>
-                          <span className="text-xs font-bold text-primary-500 px-4 py-2 glass rounded-full border border-primary-500/30">Featured</span>
-                        </div>
-                        
-                        <div className="space-y-4">
-                          <h3 className="text-3xl font-display font-bold text-neutral-900">
-                            {service.title}
-                          </h3>
-                          <p className="text-lg text-neutral-600 leading-relaxed">
-                            {service.description}
-                          </p>
-                        </div>
-
-                        <button
-                          onClick={() => handleNavigation(service)}
-                          className="group/btn inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-2xl hover:shadow-glow transition-all duration-300 hover:scale-105"
-                        >
-                          <span>{service.buttonText}</span>
-                          <FaExternalLinkAlt className="group-hover/btn:translate-x-1 transition-transform" />
-                        </button>
-                      </div>
-
-                      <div className="flex-1 relative h-64 md:h-auto min-h-[300px]">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 to-transparent"></div>
-                        <img
-                          src={service.image}
-                          alt={service.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                    </div>
+              {/* Card */}
+              <div className="relative h-full bg-white dark:bg-slate-800 rounded-3xl p-8 border-2 border-neutral-200 dark:border-neutral-700 hover:border-primary-500 dark:hover:border-primary-400 transition-all duration-300 overflow-hidden">
+                {/* Gradient Overlay on Hover */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-5 dark:group-hover:opacity-10 transition-opacity duration-300`}></div>
+                
+                {/* Floating Icon */}
+                <div className="relative z-10 space-y-6">
+                  <div className={`inline-flex p-4 ${service.iconBg} dark:${service.iconBg}/80 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <service.icon className="text-3xl text-white" />
                   </div>
-                ) : (
-                  <div className={`relative bg-white rounded-3xl p-8 border-2 ${
-                    index === 1 ? 'border-accent-500/30 hover:border-accent-500/60' : 
-                    'border-aurora-500/30 hover:border-aurora-500/60'
-                  } overflow-hidden shadow-soft hover:shadow-large transition-all duration-500 hover:scale-105`}>
-                    <div className={`absolute inset-0 ${
-                      index === 1 ? 'bg-gradient-to-br from-accent-500/5 to-transparent' : 
-                      'bg-gradient-to-br from-aurora-500/5 to-transparent'
-                    } opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
 
-                    <div className="relative z-10 space-y-6">
-                      <div className="flex items-start justify-between">
-                        <div className={`p-4 bg-gradient-to-br ${
-                          index === 1 ? 'from-accent-500 to-accent-600 shadow-glow-accent' : 
-                          'from-aurora-500 to-aurora-600 shadow-glow-aurora'
-                        } rounded-2xl text-white`}>
-                          {index === 1 ? <FaComments className="text-3xl" /> : <FaGlobe className="text-3xl" />}
-                        </div>
-                        <img
-                          src={service.iconImage}
-                          alt=""
-                          className="h-16 w-auto opacity-40 group-hover:opacity-70 transition-opacity duration-300"
-                        />
-                      </div>
-
-                      <div className="space-y-3">
-                        <h3 className="text-2xl font-display font-bold text-neutral-900">
-                          {service.title}
-                        </h3>
-                        <p className="text-neutral-600 leading-relaxed text-lg">
-                          {service.description}
-                        </p>
-                      </div>
-
-                      <button
-                        onClick={() => handleNavigation(service)}
-                        className={`group/btn inline-flex items-center gap-3 px-6 py-3 ${
-                          index === 1 ? 'bg-gradient-to-r from-accent-600 to-accent-700 hover:shadow-glow-accent' : 
-                          'bg-gradient-to-r from-aurora-600 to-aurora-700 hover:shadow-glow-aurora'
-                        } text-white font-semibold rounded-2xl transition-all duration-300 hover:scale-105`}
-                      >
-                        <span>{service.buttonText}</span>
-                        {service.external ? (
-                          <FaExternalLinkAlt className="group-hover/btn:translate-x-1 transition-transform" />
-                        ) : (
-                          <FaArrowRight className="group-hover/btn:translate-x-1 transition-transform" />
-                        )}
-                      </button>
-                    </div>
+                  {/* Title */}
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                      {service.subtitle}
+                    </p>
+                    <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+                      {service.title}
+                    </h3>
                   </div>
-                )}
+
+                  {/* Description */}
+                  <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                    {service.description}
+                  </p>
+
+                  {/* Features List */}
+                  <ul className="space-y-2">
+                    {service.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center space-x-2 text-sm text-neutral-700 dark:text-neutral-300">
+                        <FaCheckCircle className="text-success-600 dark:text-success-400 flex-shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Hover Indicator */}
+                  <div className="pt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className={`h-1 w-full bg-gradient-to-r ${service.gradient} rounded-full`}></div>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Bottom CTA */}
+        <div className="mt-16 text-center">
+          <div className="inline-flex flex-col md:flex-row items-center gap-4 p-8 bg-white dark:bg-slate-800 rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-lg">
+            <div className="text-center md:text-left">
+              <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                Ready to connect with the world?
+              </p>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                Start chatting in any language, instantly
+              </p>
+            </div>
+            <a
+              href="/Chat"
+              className="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-xl shadow-primary-500/30 whitespace-nowrap"
+            >
+              Start Chatting
+            </a>
+          </div>
         </div>
       </div>
     </div>
