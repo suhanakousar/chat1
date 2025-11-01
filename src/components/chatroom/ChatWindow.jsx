@@ -28,8 +28,11 @@ import {
   FaTrash,
   FaReply,
   FaSmile,
+  FaArrowLeft,
+  FaUsers,
 } from "react-icons/fa";
 import { languages } from "../../constants";
+import MemberProfiles from "./MemberProfiles";
 
 const MessageBubble = ({ message, currentUserId, currentChat, onDelete }) => {
   const [showActions, setShowActions] = useState(false);
@@ -131,6 +134,8 @@ const ChatHeader = ({
   language,
   setLanguage,
   onSearch,
+  onBack,
+  onShowMembers,
 }) => {
   const [showLangSelector, setShowLangSelector] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -139,13 +144,14 @@ const ChatHeader = ({
     <header className="px-6 py-4 border-b border-brand-grey-200 dark:border-brand-grey-light bg-brand-white dark:bg-brand-grey-medium flex-shrink-0">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <button
-            className="md:hidden btn-icon p-2"
-            onClick={toggleSidebar}
-            aria-label="Toggle sidebar"
-          >
-            <FaBars />
-          </button>
+          <Tooltip content="Back">
+            <IconButton
+              icon={<FaArrowLeft />}
+              onClick={onBack || toggleSidebar}
+              ariaLabel="Back to chats"
+              className="md:hidden"
+            />
+          </Tooltip>
 
           <AvatarChat
             color={currentChat?.avatar_color}
@@ -207,6 +213,14 @@ const ChatHeader = ({
               </div>
             )}
           </div>
+          
+          <Tooltip content="View members">
+            <IconButton
+              icon={<FaUsers />}
+              onClick={onShowMembers}
+              ariaLabel="View members"
+            />
+          </Tooltip>
           
           <ThemeToggle />
           
@@ -365,11 +379,14 @@ const ChatWindow = ({
   onLoadMoreMessages,
   currentUserId,
   onDeleteMessage,
+  onBack,
+  isOnline,
 }) => {
   const [language, setLanguage] = useState("en");
   const [isRecording, setIsRecording] = useState(false);
   const [translatedMessages, setTranslatedMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [showMemberProfiles, setShowMemberProfiles] = useState(false);
   
   const speechKey = import.meta.env.VITE_TRANS_KEY;
   const speechRegion = import.meta.env.VITE_SPEECH_REGION;
@@ -510,7 +527,13 @@ const ChatWindow = ({
   }, [translatedMessages]);
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-brand-white dark:bg-brand-grey-dark">
+    <div className="flex-1 flex flex-col h-full bg-brand-white dark:bg-brand-grey-dark relative">
+      {!isOnline && (
+        <div className="absolute top-0 left-0 right-0 bg-error text-white px-4 py-2 text-center z-50 font-['Inter'] text-sm">
+          You are offline. Messages will be sent when connection is restored.
+        </div>
+      )}
+      
       <ChatHeader
         currentChat={currentChat}
         toggleSidebar={toggleSidebar}
@@ -518,6 +541,8 @@ const ChatWindow = ({
         showChatInfo={showChatInfo}
         language={language}
         setLanguage={setLanguage}
+        onBack={onBack}
+        onShowMembers={() => setShowMemberProfiles(true)}
       />
 
       <div 
@@ -568,6 +593,13 @@ const ChatWindow = ({
         isRecording={isRecording}
         onRecordStart={handleSpeechToTextStart}
         onRecordStop={handleSpeechToTextStop}
+      />
+
+      <MemberProfiles
+        chatId={currentChat?.id}
+        currentUserId={currentUserId}
+        isOpen={showMemberProfiles}
+        onClose={() => setShowMemberProfiles(false)}
       />
     </div>
   );

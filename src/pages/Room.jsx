@@ -4,14 +4,15 @@ import Sidebar from "../components/chatroom/Sidebar.jsx";
 import ChatWindow from "../components/chatroom/ChatWindow.jsx";
 import ChatInfo from "../components/chatroom/ChatInfo.jsx";
 import NavBar from "../components/NavBar.jsx";
-import { FaTimes } from "react-icons/fa";
+import { FaTimes, FaWifi } from "react-icons/fa";
 import axios from "axios";
 import io from "socket.io-client";
-import { showToastError } from "../components/common/ShowToast";
+import { showToastError, showToastSuccess } from "../components/common/ShowToast";
 import RequestJoin from "../components/chatroom/RequestJoin.jsx";
 import WaitingApproval from "../components/chatroom/WaitingApproval.jsx";
 import { useParams, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../config/api";
+import { useMessagePersistence } from "../hooks/useMessagePersistence";
 
 const ChatRoom = () => {
   const EmptyState = () => {
@@ -197,6 +198,31 @@ const ChatRoom = () => {
 
   // Single socket
   const [socket, setSocket] = useState(null);
+  
+  const {
+    isOnline,
+    queuedMessages,
+    persistMessages,
+    loadPersistedMessages,
+  } = useMessagePersistence(currentChatId, socket);
+
+  useEffect(() => {
+    if (currentChatId) {
+      const persisted = loadPersistedMessages(currentChatId);
+      if (persisted && persisted.length > 0 && !roomMessages[currentChatId]) {
+        setRoomMessages(prev => ({
+          ...prev,
+          [currentChatId]: persisted
+        }));
+      }
+    }
+  }, [currentChatId, loadPersistedMessages]);
+
+  useEffect(() => {
+    if (currentChatId && roomMessages[currentChatId]) {
+      persistMessages(currentChatId, roomMessages[currentChatId]);
+    }
+  }, [roomMessages, currentChatId, persistMessages]);
 
   useEffect(() => {
     const loadInitialMessages = async () => {
@@ -937,6 +963,14 @@ const ChatRoom = () => {
         currentUserId={userId}
         onFileUpload={handleFileUpload}
         onImageUpload={handleImageUpload}
+        isOnline={isOnline}
+        onBack={() => {
+          setCurrentChatId(null);
+          navigate('/Chat');
+          if (window.innerWidth < 768) {
+            setShowSidebar(true);
+          }
+        }}
       />
     );
   };
