@@ -37,7 +37,9 @@ const Signup = () => {
         showToastSuccess(response.data?.message || "Account created successfully");
         localStorage.setItem('user_id', response.data.user?.id)
         login(response.data?.token);
-        navigate("/");
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get('redirect');
+        navigate(redirect || "/");
       }
     } catch (err) {
       showToastError(err.response?.data?.message || "Registration failed");

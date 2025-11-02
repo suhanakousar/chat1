@@ -34,6 +34,10 @@ io.on("connection", (socket) => {
       socket.to(roomID).emit("receive-message", message);
     }
   });
+  socket.on("join-request-handled", (data) => {
+    // Emit to the specific user
+    io.to(data.userId).emit("join-request-handled", data);
+  });
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);
   });

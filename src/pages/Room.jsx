@@ -140,6 +140,7 @@ const ChatRoom = () => {
   const [messagePagination, setMessagePagination] = useState({}); // { [chatId]: { cursor, hasMore } }
 
   const [showJoinRequest, setShowJoinRequest] = useState(false);
+  const [showWaitingApproval, setShowWaitingApproval] = useState(false);
   const [invitedChatDetails, setInvitedChatDetails] = useState({});
 
   // const [isMessagesLoaded, setIsMessagesLoaded] = useState(false);
@@ -148,7 +149,7 @@ const ChatRoom = () => {
 
   useEffect(() => {
     const checkMembership = async () => {
-      if (currentChatId && chats.length > 0) {
+      if (currentChatId) {
         try {
           const res = await axios.get(
             `${API_BASE_URL}/chatroom/${currentChatId}/isMember/${userId}`
@@ -156,11 +157,29 @@ const ChatRoom = () => {
 
           console.log("check mem:", res.data, currentChatId, userId);
 
-          if (!res.data?.isMember) {
-            const chatRes = await axios.get(
-              `${API_BASE_URL}/chatroom/${currentChatId}`
-            );
-            const chatroom = chatRes.data.chatRoom;
+          if (res.data.isMember) {
+            // User is a member, load the chat
+            setCurrentChatId(currentChatId);
+          } else if (res.data.status === 'pending') {
+            const chatroom = res.data.chatroom;
+
+            const invitedChat = {
+              id: currentChatId,
+              name: chatroom.name,
+              avatarColor: chatroom.avatar_color,
+              avatarText: chatroom.avatar_text,
+              lastMessage: chatroom.last_message,
+              time: new Date(),
+              unread: true,
+              messages: [],
+              status: "pending",
+            };
+
+            setInvitedChatDetails(invitedChat);
+            setShowWaitingApproval(true);
+            navigate("/Chat");
+          } else {
+            const chatroom = res.data.chatroom;
 
             const invitedChat = {
               id: currentChatId,
@@ -201,7 +220,6 @@ const ChatRoom = () => {
   
   const {
     isOnline,
-    queuedMessages,
     persistMessages,
     loadPersistedMessages,
   } = useMessagePersistence(currentChatId, socket);
@@ -226,7 +244,7 @@ const ChatRoom = () => {
 
   useEffect(() => {
     const loadInitialMessages = async () => {
-      if (currentChatId && !roomMessages[currentChatId]) {
+      if (currentChatId && !roomMessages[currentChatId] && currentChat && currentChat.status !== "pending") {
         console.log("Enter function fetch initial messages.");
         console.log(`${API_BASE_URL}/chatroom/${currentChatId}/messages`);
 
@@ -295,6 +313,21 @@ const ChatRoom = () => {
       console.log("Socket disconnected:", reason);
     });
 
+    socketInstance.on("join-request-handled", (data) => {
+      console.log("Received join-request-handled:", data);
+      if (data.userId === userId) {
+        if (data.action === 'approved') {
+          showToastSuccess("Your join request has been approved!");
+          // Refresh chats
+          fetchChats();
+          // Navigate to the chat
+          navigate(`/Chat/${data.chatId}`);
+        } else {
+          showToastError("Your join request has been rejected.");
+        }
+      }
+    });
+
     setSocket(socketInstance);
 
     return () => socketInstance.disconnect();
@@ -326,51 +359,48 @@ const ChatRoom = () => {
   const currentChat = chats.find((c) => c.id === currentChatId) || null;
 
   // 1. Load all chats for the sidebar (no GET for messages, just for chats)
-  useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        const allChats = await axios.get(
-          `${API_BASE_URL}/chatroom/user/${userId}`
-        );
-        const newChats =
-          allChats.data?.chatRooms.map((chat) => chat.chatRoom) || [];
+  const fetchChats = async () => {
+    try {
+      const allChats = await axios.get(
+        `${API_BASE_URL}/chatroom/user/${userId}`
+      );
+      const newChats =
+        allChats.data?.chatRooms.map((chat) => chat.chatRoom) || [];
 
-        console.log("Chats from server:", newChats);
-        // Mark unread
-        const statuses = await Promise.all(
-          newChats.map((chat) =>
-            axios.get(
-              `${API_BASE_URL}/chatroom/${chat.id}/readStatus/${userId}`
-            )
+      console.log("Chats from server:", newChats);
+      // Mark unread
+      const statuses = await Promise.all(
+        newChats.map((chat) =>
+          axios.get(
+            `${API_BASE_URL}/chatroom/${chat.id}/readStatus/${userId}`
           )
-        );
+        )
+      );
 
-        newChats.forEach((chat, index) => {
-          chat.unread = statuses[index].data.unread;
-        });
+      newChats.forEach((chat, index) => {
+        chat.unread = statuses[index].data.unread;
+      });
 
-        setChats([...chats, ...newChats]);
+      setChats(newChats);
 
-        // Set currentChatId based on urlChatId if valid, else first chat or null
-        if (urlChatId && newChats.some(chat => chat.id === urlChatId)) {
-          setCurrentChatId(urlChatId);
-        } else if (newChats.length > 0) {
-          setCurrentChatId(newChats[0].id);
-        } else {
-          setCurrentChatId(null);
-        }
-
-        // If urlChatId is specified but not found, show error
-        if (urlChatId && !newChats.some(chat => chat.id === urlChatId)) {
-          showToastError("Chat room not found");
-          navigate("/Chat");
-        }
-      } catch (err) {
-        showToastError(err.response?.data?.message || "Failed to load chats");
+      // Set currentChatId based on urlChatId if valid, else first chat or null
+      if (urlChatId && newChats.some(chat => chat.id === urlChatId)) {
+        setCurrentChatId(urlChatId);
+      } else if (urlChatId) {
+        // If urlChatId is specified, set it even if not in chats (for invite)
+        setCurrentChatId(urlChatId);
+      } else if (newChats.length > 0) {
+        setCurrentChatId(newChats[0].id);
+      } else {
         setCurrentChatId(null);
       }
-    };
+    } catch (err) {
+      showToastError(err.response?.data?.message || "Failed to load chats");
+      setCurrentChatId(null);
+    }
+  };
 
+  useEffect(() => {
     fetchChats();
   }, [userId, urlChatId, navigate]);
 
@@ -860,29 +890,15 @@ const ChatRoom = () => {
           userId: userId,
         }
       );
+      showToastSuccess("Join request sent successfully");
     } catch (err) {
       console.log("Error in updating joining request: ", err.message);
+      showToastError("Failed to send join request");
+      return;
     }
 
-    const newChat = {
-      ...invitedChatDetails,
-      id: Date.now(),
-      status: "pending",
-      messages: [
-        {
-          id: Date.now(),
-          content: `You requested to join ${invitedChatDetails.name}. Waiting for approval...`,
-          fromUser: false,
-          sender: "System",
-          senderColor: "bg-gray-400",
-          created_at: new Date(),
-        },
-      ],
-    };
-
-    setChats([newChat, ...chats]);
-    setCurrentChatId(newChat.id);
     setShowJoinRequest(false);
+    setShowWaitingApproval(true);
   };
 
   // 12. Handle cancel join request
@@ -896,7 +912,13 @@ const ChatRoom = () => {
     }
   };
 
-  // 13. Handle delete chat
+  // 13. Handle back to chats
+  const handleBackToChats = () => {
+    setCurrentChatId(null);
+    navigate("/Chat");
+  };
+
+  // 14. Handle delete chat
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [chatToDelete, setChatToDelete] = useState(null);
 
@@ -965,15 +987,36 @@ const ChatRoom = () => {
         onImageUpload={handleImageUpload}
         isOnline={isOnline}
         onBack={() => {
-          setCurrentChatId(null);
-          navigate('/Chat');
-          if (window.innerWidth < 768) {
-            setShowSidebar(true);
-          }
+          navigate('/');
         }}
       />
     );
   };
+
+  if (showWaitingApproval && invitedChatDetails) {
+    return (
+      <div className="flex flex-col h-screen bg-gray-50 transition-colors">
+        <div className="flex flex-1 overflow-hidden">
+          {showSidebar && (
+            <Sidebar
+              chats={filteredChats}
+              originalChats={chats}
+              setOriginalChats={setChats}
+              currentChatId={currentChatId}
+              onChatClick={handleChatClick}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              activeFilter={activeFilter}
+              setActiveFilter={setActiveFilter}
+              onNewChat={() => setIsNewChatModalOpen(true)}
+              onBackToChats={handleBackToChats}
+            />
+          )}
+          <WaitingApproval chatName={invitedChatDetails.name} />
+        </div>
+      </div>
+    );
+  }
 
   if (showJoinRequest && invitedChatDetails) {
     return (
@@ -1003,11 +1046,6 @@ const ChatRoom = () => {
       </div>
     );
   }
-
-  const handleBackToChats = () => {
-    setCurrentChatId(null);
-    navigate("/Chat");
-  };
 
   return (
     <div className="flex flex-col h-screen bg-gray-50 transition-colors">
@@ -1039,8 +1077,6 @@ const ChatRoom = () => {
             <ChatInfo
               chatId={currentChatId}
               setCurrentChatId={setCurrentChatId}
-              originalChats={chats}
-              setOriginalChats={setChats}
               onBackToChat={() => setShowChatInfo(false)}
             />
           )}

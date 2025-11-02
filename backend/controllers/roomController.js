@@ -141,10 +141,11 @@ const getChatRoomDetails = async (req, res) => {
 		return res.status(404).json({ error: "Chat room not found" });
 	}
 
-	const formattedMembers = chatRoom.members.map(member => ({
+	const formattedMembers = chatRoom.members.filter(member => member.user).map(member => ({
 		id: member.user.id,
-		given_name: member.user.given_name,
+		given_name: member.user.given_name || 'Unknown User',
 		profile_picture: member.user.profile_picture,
+		email: member.user.email,
 		status: member.status,
         timestamp: member.timestamp
 	}));
@@ -192,7 +193,7 @@ const requestJoin = async (req, res) => {
         const { userId } = req.body;
 
         const requested = await prisma.chatRoomMember.findFirst({
-            where: { 
+            where: {
                 user_id: userId,
                 chat_id: chatId,
                 status: MemberStatus.PENDING
@@ -201,12 +202,17 @@ const requestJoin = async (req, res) => {
 
         if (requested == null) {
             await prisma.chatRoomMember.create({
-                data: { 
+                data: {
                     user_id: userId,
                     chat_id: chatId,
                     status: MemberStatus.PENDING
                 }
             })
+
+            // Notify admin via socket
+            const io = req.app.get("socketio");
+            io.to(chatId).emit("new-join-request", { userId, chatId });
+
             return res.json({ message: "Join request sent from " + userId })
         }
         return res.json({ message: userId + " already sent request to join."})
@@ -221,17 +227,19 @@ const requestJoin = async (req, res) => {
 const handleMemberRequest = async (req, res) => {
     try {
         const { chatId  } = req.params;
-        const { userId, status } = req.body;
-        
-        if (!checkAdmin(chatId, userId)) {
+        const { userId, adminId, action } = req.body;
+
+        if (!checkAdmin(chatId, adminId)) {
             return res.status(400).json({ message: "Only admin can approve member." })
         }
 
+        const status = action === 'approve' ? MemberStatus.APPROVED : MemberStatus.REJECTED;
+
         if (status == MemberStatus.REJECTED) {
             await prisma.chatRoomMember.delete({
-                where: { 
+                where: {
                     user_id_chat_id: {
-                        chat_id: chatId, 
+                        chat_id: chatId,
                         user_id: userId
                     }
                 },
@@ -239,13 +247,13 @@ const handleMemberRequest = async (req, res) => {
         }
         else {
             await prisma.chatRoomMember.update({
-                where: { 
+                where: {
                     user_id_chat_id: {
-                        chat_id: chatId, 
+                        chat_id: chatId,
                         user_id: userId
                     }
                 },
-                data: { 
+                data: {
                     status: status,
                     timestamp: new Date()
                 }
@@ -260,10 +268,10 @@ const handleMemberRequest = async (req, res) => {
             })
         }
 
-        return res.json({ message: "Member approved " + userId })
+        return res.json({ message: "Member " + (action === 'approve' ? "approved" : "rejected") + " " + userId })
     }
     catch (err) {
-        console.error("Error requesting to join:", err.message);
+        console.error("Error handling member request:", err.message);
         return res.status(500).json({ error: "Internal server error" });
     }
 }
@@ -483,8 +491,28 @@ const loadChatRooms = async (req, res) => {
         // Get last chat room ID for next request
         const nextCursor = chatRooms.length === limit ? chatRooms[chatRooms.length - 1].id : null;
 
+        // Add member count to each chat room
+        const chatRoomsWithMemberCount = await Promise.all(
+            chatRooms.map(async (chatRoomMember) => {
+                const memberCount = await prisma.chatRoomMember.count({
+                    where: {
+                        chat_id: chatRoomMember.chat_id,
+                        status: MemberStatus.APPROVED
+                    }
+                });
+
+                return {
+                    ...chatRoomMember,
+                    chatRoom: {
+                        ...chatRoomMember.chatRoom,
+                        member_count: memberCount
+                    }
+                };
+            })
+        );
+
         return res.json({
-            chatRooms: chatRooms,
+            chatRooms: chatRoomsWithMemberCount,
             cursor: nextCursor, // Use this cursor for next request
             hasMore: !!nextCursor
         });
@@ -577,17 +605,44 @@ const changeAdmin = async (req, res) => {
 const isMember = async (req, res) => {
     try {
         const { chatId, userId } = req.params;
+
+        // Validate chatId format
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(chatId)) {
+            return res.status(404).json({ error: "Chat room not found" });
+        }
+
+        // Check if chat room exists
+        const chatRoom = await prisma.chatRoom.findUnique({
+            where: { id: chatId },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                admin_id: true,
+                avatar_color: true,
+                avatar_text: true,
+                last_message: true,
+                created_at: true,
+                updated_at: true,
+            }
+        });
+        if (!chatRoom) {
+            return res.status(404).json({ error: "Chat room not found" });
+        }
+
         const findMem = await prisma.chatRoomMember.findFirst({
             where: {
                 chat_id: chatId,
-                user_id: userId,
-                status: 'approved'
+                user_id: userId
             }
         });
 
         console.log(findMem)
-          
-        return res.json({isMember: findMem != null, chatroom: findMem})
+
+        const isMember = findMem?.status === 'approved';
+        const status = findMem?.status || null;
+
+        return res.json({isMember, status, chatroom: chatRoom})
     }
     catch (err) {
         console.error("Failed to check member status:", err.message);

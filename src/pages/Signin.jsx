@@ -35,7 +35,9 @@ const Signin = () => {
         showToastSuccess("Login successful");
         login(response.data?.token);
         localStorage.setItem('user_id', response.data.user?.id)
-        navigate("/");
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get('redirect');
+        navigate(redirect || "/");
       }
     } catch (err) {
       showToastError(err.response?.data?.message || "Login failed");
@@ -59,7 +61,9 @@ const Signin = () => {
         showToastSuccess("Login successful");
         localStorage.setItem('user_id', result.data.user?.id)
         login(result.data?.token);
-        navigate("/");
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get('redirect');
+        navigate(redirect || "/");
       }
     } catch (err) {
       console.error("Error during Google login:", err);

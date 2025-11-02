@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import io from "socket.io-client";
 import { AvatarPerson } from "./ReusableComponents";
 import {
   IconButton,
@@ -22,6 +23,7 @@ import {
   FaCalendar,
   FaUsers,
   FaLink,
+  FaSync,
 } from "react-icons/fa";
 import { showToastError, showToastSuccess } from "../common/ShowToast";
 import { API_BASE_URL } from "../../config/api";
@@ -142,7 +144,7 @@ const JoinRequestItem = ({ request, onAccept, onReject }) => {
   );
 };
 
-const ChatInfo = ({ chatId, currentUserId, onClose, setCurrentChatId, originalChats, setOriginalChats }) => {
+const ChatInfo = ({ chatId, currentUserId, onClose, setCurrentChatId }) => {
   const userId = currentUserId || localStorage.getItem("user_id");
   const [groupData, setGroupData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -154,9 +156,9 @@ const ChatInfo = ({ chatId, currentUserId, onClose, setCurrentChatId, originalCh
   const [isUserInfoModalOpen, setIsUserInfoModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState(false);
+  const [socket, setSocket] = useState(null);
 
-  useEffect(() => {
-    const fetchGroupData = async () => {
+  const fetchGroupData = async () => {
       try {
         setLoading(true);
         const response = await axios.get(`${API_BASE_URL}/chatroom/${chatId}`);
@@ -173,6 +175,25 @@ const ChatInfo = ({ chatId, currentUserId, onClose, setCurrentChatId, originalCh
           }
         }
 
+        // Format members and join requests to handle missing user data
+        const formattedMembers = members.filter(member => member.user).map(member => ({
+          id: member.user.id,
+          given_name: member.user.given_name || 'Unknown User',
+          profile_picture: member.user.profile_picture,
+          email: member.user.email,
+          status: member.status,
+          timestamp: member.timestamp
+        }));
+
+        const formattedJoinRequests = pendingMembers.filter(member => member.user).map(member => ({
+          id: member.user.id,
+          given_name: member.user.given_name || 'Unknown User',
+          profile_picture: member.user.profile_picture,
+          email: member.user.email,
+          status: member.status,
+          timestamp: member.timestamp
+        }));
+
         const mockData = {
           id: chatRoom.id,
           name: chatRoom.name,
@@ -180,8 +201,8 @@ const ChatInfo = ({ chatId, currentUserId, onClose, setCurrentChatId, originalCh
           description: chatRoom.description,
           adminId: chatRoom.admin_id,
           inviteLink: `${window.location.origin}/Chat/${chatRoom.id}`,
-          members: members,
-          joinRequests: pendingMembers,
+          members: formattedMembers,
+          joinRequests: formattedJoinRequests,
         };
 
         setGroupData(mockData);
@@ -196,10 +217,43 @@ const ChatInfo = ({ chatId, currentUserId, onClose, setCurrentChatId, originalCh
       }
     };
 
+  useEffect(() => {
     if (chatId) {
       fetchGroupData();
     }
   }, [chatId, userId]);
+
+  useEffect(() => {
+    const socketInstance = io(`${API_BASE_URL}`, {
+      transports: ["websocket"],
+      auth: { userId: userId },
+    });
+
+    socketInstance.on("connect", () => {
+      console.log("ChatInfo socket connected");
+      // Join the chat room to receive notifications
+      socketInstance.emit("joinRoom", chatId);
+    });
+
+    socketInstance.on("new-join-request", (data) => {
+      if (data.chatId === chatId && isCurrentUserAdmin) {
+        // Refresh join requests
+        fetchGroupData();
+      }
+    });
+
+    setSocket(socketInstance);
+
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, [chatId, userId, isCurrentUserAdmin]);
+
+  const handleRefresh = () => {
+    if (chatId) {
+      fetchGroupData();
+    }
+  };
 
   const handleCopyInviteLink = () => {
     navigator.clipboard.writeText(groupData.inviteLink);
@@ -208,21 +262,27 @@ const ChatInfo = ({ chatId, currentUserId, onClose, setCurrentChatId, originalCh
 
   const handleJoinRequest = async (requestUserId, approve) => {
     try {
+      await axios.put(`${API_BASE_URL}/chatroom/${chatId}/memberRequest`, {
+        userId: requestUserId,
+        adminId: userId,
+        action: approve ? 'approve' : 'reject',
+      });
+
+      // Refresh the group data to ensure UI is up to date
+      await fetchGroupData();
+
       if (approve) {
-        await axios.put(`${API_BASE_URL}/chatroom/${chatId}/approveMember`, {
-          userId: requestUserId,
-        });
-        const approvedRequest = joinRequests.find((req) => req.id === requestUserId);
-        setGroupData((prev) => ({
-          ...prev,
-          members: [...prev.members, { ...approvedRequest, status: "approved" }],
-        }));
         showToastSuccess("Member approved successfully");
       } else {
-        await axios.delete(`${API_BASE_URL}/chatroom/${chatId}/members/${requestUserId}`);
         showToastSuccess("Request rejected");
       }
-      setJoinRequests((prev) => prev.filter((req) => req.id !== requestUserId));
+
+      // Notify the user via socket
+      if (socket) {
+        socket.emit("join-request-handled", { userId: requestUserId, chatId, action: approve ? 'approved' : 'rejected' });
+      } else {
+        console.log("Socket not available in ChatInfo");
+      }
     } catch (err) {
       console.error("Failed to handle join request", err);
       showToastError("Failed to process request");
@@ -369,11 +429,18 @@ const ChatInfo = ({ chatId, currentUserId, onClose, setCurrentChatId, originalCh
               {groupData?.name}
             </h2>
             {isCurrentUserAdmin && (
-              <IconButton
-                icon={<FaEdit />}
-                onClick={() => setIsEditingName(true)}
-                ariaLabel="Edit group name"
-              />
+              <>
+                <IconButton
+                  icon={<FaSync />}
+                  onClick={handleRefresh}
+                  ariaLabel="Refresh group data"
+                />
+                <IconButton
+                  icon={<FaEdit />}
+                  onClick={() => setIsEditingName(true)}
+                  ariaLabel="Edit group name"
+                />
+              </>
             )}
           </div>
         )}

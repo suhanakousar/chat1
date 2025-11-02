@@ -129,11 +129,19 @@ const Sidebar = ({
       {/* Sidebar Header */}
       <div className="px-6 py-4 border-b border-brand-grey-200 dark:border-brand-grey-light flex-shrink-0">
         <div className="flex justify-between items-center">
-          <h1 className="text-brand-grey-dark dark:text-brand-white font-['Montserrat'] text-2xl font-bold">
-            Chats
-          </h1>
-          <IconButton 
-            icon={<FaCommentDots className="text-xl" />} 
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.history.back()}
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-brand-grey-100 dark:hover:bg-brand-grey-600 transition-colors text-brand-grey-600 dark:text-brand-grey-300 font-medium"
+            >
+              ← Back
+            </button>
+            <h1 className="text-brand-grey-dark dark:text-brand-white font-['Montserrat'] text-2xl font-bold">
+              Chats
+            </h1>
+          </div>
+          <IconButton
+            icon={<FaCommentDots className="text-xl" />}
             onClick={onNewChat}
             ariaLabel="Start new chat"
           />
